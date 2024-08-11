@@ -1,0 +1,23 @@
+@startuml LLVM_Backend
+ 
+hide circle
+hide empty members
+
+skinparam {
+    ClassBackgroundColor transparent
+    ClassHeaderBackgroundColor whitesmoke
+    ClassStereotypeFontColor transparent
+    ' linetype ortho
+}
+
+TargetMachine <|-- LLVMTargetMachine
+LLVMTargetMachine <|-- RISCVTargetMachine
+RISCVGenSubtargetInfo <|-- RISCVSubtarget
+
+Pass <|-- ModulePass
+ModulePass <|-- ImmutablePass
+ImmutablePass <|-- TargetPassConfig
+TargetPassConfig <|-- RISCVPassConfig
+TargetPassConfig o-- PassManagerBase:PM
+
+@enduml
