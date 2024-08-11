@@ -1,3 +1,3 @@
 # doc
 
-[WebAssembly](WebAssembly.md)
+[WebAssembly](WebAssembly/WebAssembly.md)
