@@ -3,7 +3,7 @@
 sudo swapoff -a
 sudo dd if=/dev/zero of=/swapfile bs=1GB count=32
 sudo chmod 600 /swapfile
-ls / | grep swapfile
+ls -l / | grep swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 ```

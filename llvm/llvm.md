@@ -6,6 +6,6 @@
 git clone -b release/18.x --depth=1 https://github.com/llvm/llvm-project.git
 
 cd llvm-project
-cmake -S llvm -B build -G Ninja -DLLVM_ENABLE_PROJECTS="clang;lld" -DCMAKE_INSTALL_PREFIX=llvm-install -DCMAKE_BUILD_TYPE=Debug -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_PARALLEL_COMPILE_JOBS=8
+cmake -S llvm -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 ```
