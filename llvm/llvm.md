@@ -9,3 +9,4 @@ cd llvm-project
 cmake -S llvm -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 ```
+

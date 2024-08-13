@@ -10,14 +10,103 @@ skinparam {
     ' linetype ortho
 }
 
+package ARMBackend {
+    class ARMGenInstrInfo
+    class ARMGenRegisterInfo
+    class ARMGenSubtargetInfo
+    class ARMInstrInfo
+    class ARMRegisterInfo
+    class ARMBaseInstrInfo
+    class ARMBaseRegisterInfo
+    class ARMSubtarget
+    class ARMInstructionSelector
+    class ARMBaseTargetMachine
+    class ARMPassConfig
+}
+
+package FrontEnd {
+    class DataLayout
+    class Module
+    class LLVMContext
+    class LLVMContextImpl
+    class IRBuilder
+    class IRBuilderBase
+    class BasicBlock
+    class Instruction
+    class Value
+    class User
+    class IRBuilderDefaultInserter
+    class BinaryOperator
+}
+
+interface TargetMachine {
+    +getSubtargetImpl()
+}
+
 TargetMachine <|-- LLVMTargetMachine
-LLVMTargetMachine <|-- RISCVTargetMachine
-RISCVGenSubtargetInfo <|-- RISCVSubtarget
+LLVMTargetMachine <|-- ARMBaseTargetMachine
+ARMGenSubtargetInfo <|-- ARMSubtarget
 
 Pass <|-- ModulePass
 ModulePass <|-- ImmutablePass
 ImmutablePass <|-- TargetPassConfig
-TargetPassConfig <|-- RISCVPassConfig
+TargetPassConfig <|-- ARMPassConfig
 TargetPassConfig o-- PassManagerBase:PM
+
+MachineSchedContext o-- MachineFunction:MF
+' ARMBaseTargetMachine ..> ARMSubtarget:getSubtargetImpl()
+' ARMSubtarget o-- ARMBaseTargetMachine:TM
+ARMSubtarget o-- ARMBaseInstrInfo:InstrInfo
+ARMGenInstrInfo <|-- ARMBaseInstrInfo
+InstructionSelector <|-- ARMInstructionSelector
+ARMInstructionSelector o-- ARMBaseInstrInfo:TII
+ARMInstructionSelector o-- ARMSubtarget:STI
+ARMSubtarget o-- ARMInstructionSelector:InstSelector
+ARMBaseInstrInfo <|-- ARMInstrInfo
+
+ARMGenRegisterInfo <|-- ARMBaseRegisterInfo
+ARMBaseRegisterInfo <|-- ARMRegisterInfo
+ARMInstrInfo *-- ARMRegisterInfo:RI
+
+MCRegisterInfo <|-- TargetRegisterInfo
+TargetRegisterInfo <|-- ARMGenRegisterInfo
+
+TargetInstrInfo <|-- ARMGenInstrInfo
+TargetSubtargetInfo <|-- ARMGenSubtargetInfo
+
+InstructionSelector o-- TargetPassConfig:TPC
+GIMatchTableExecutor <|-- InstructionSelector
+MachineFunction --o GIMatchTableExecutor:MF
+
+TargetMachine ..> TargetSubtargetInfo:getSubtargetImpl()
+TargetSubtargetInfo ..> TargetInstrInfo:getInstrInfo()
+MachineFunction ..> MachineFrameInfo:getFrameInfo()
+TargetSubtargetInfo ..> TargetRegisterInfo:getRegisterInfo()
+
+TargetRegistry o.. Target:FirstTarget
+Target o-- AsmPrinterCtorTy:AsmPrinterCtorFn
+AsmPrinterCtorTy ..> AsmPrinter:NEW
+AsmPrinter o-- TargetMachine:TM
+
+Module o-- LLVMContext:Context
+LLVMContext o-- LLVMContextImpl:pImpl
+IRBuilderBase <|-- IRBuilder
+LLVMContext --o IRBuilderBase:Context
+
+Value <|-- User
+User <|-- Instruction
+Instruction <|-- BinaryOperator
+IRBuilderBase o-- IRBuilderDefaultInserter:Inserter
+IRBuilder o-- BasicBlock:BB
+BasicBlock o-- Instruction:InstList[]
+
+TargetMachine ..> DataLayout:createDataLayout()
+DataLayout --o Module:DL
+
+MachineSchedContext <|-- MachineSchedulerBase
+MachineFunctionPass <|-- MachineSchedulerBase
+MachineSchedulerBase <|-- MachineScheduler
+MachineSchedulerBase <|-- PostMachineScheduler
+
 
 @enduml
