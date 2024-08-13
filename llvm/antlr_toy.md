@@ -86,17 +86,20 @@ cmake_minimum_required(VERSION 3.15.0)
 project(antlr-toy VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(LLVM_DIR "$(llvm-config --cmakedir)")
+message(STATUS "LLVM_DIR: ${LLVM_DIR}")
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} /usr/lib/llvm-10/include)
+find_package(LLVM 18.1.8 REQUIRED CONFIG)
+
 file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(antlr-toy ${SRCS})
-target_link_directories(antlr-toy PUBLIC /usr/lib/llvm-10/lib)
-target_link_libraries(antlr-toy ${CONAN_LIBS} Threads::Threads LLVM-10)
+target_link_libraries(antlr-toy ${CONAN_LIBS} Threads::Threads ${LLVM_AVAILABLE_LIBS})
 target_compile_options(antlr-toy PRIVATE "-fexceptions")
-add_definitions(-D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS)
 ```
 
 实现访问器：
@@ -115,6 +118,15 @@ add_definitions(-D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Passes/PassBuilder.h"
+#include "llvm/Passes/StandardInstrumentations.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Scalar/Reassociate.h"
+#include "llvm/Transforms/Scalar/SimplifyCFG.h"
 
 using namespace llvm;
 
@@ -122,14 +134,42 @@ static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<IRBuilder<>> Builder;
 static std::unique_ptr<Module> TheModule;
 static std::map<std::string, Value *> NamedValues;
+static std::unique_ptr<FunctionPassManager> TheFPM;
+static std::unique_ptr<LoopAnalysisManager> TheLAM;
+static std::unique_ptr<FunctionAnalysisManager> TheFAM;
+static std::unique_ptr<CGSCCAnalysisManager> TheCGAM;
+static std::unique_ptr<ModuleAnalysisManager> TheMAM;
+static std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
+static std::unique_ptr<StandardInstrumentations> TheSI;
+static ExitOnError ExitOnErr;
 
 static std::map<char, int> BinopPrecedence;
 
-static void InitializeModule(){
+static void InitializeModuleAndManagers(){
     TheContext = std::make_unique<LLVMContext>();
-    TheModule = std::make_unique<Module>("my cool jit", *TheContext);
+    TheModule = std::make_unique<Module>("KaleidoscopeJIT", *TheContext);
 
     Builder = std::make_unique<IRBuilder<>>(*TheContext);
+
+    TheFPM = std::make_unique<FunctionPassManager>();
+    TheLAM = std::make_unique<LoopAnalysisManager>();
+    TheFAM = std::make_unique<FunctionAnalysisManager>();
+    TheCGAM = std::make_unique<CGSCCAnalysisManager>();
+    TheMAM = std::make_unique<ModuleAnalysisManager>();
+    ThePIC = std::make_unique<PassInstrumentationCallbacks>();
+    TheSI = std::make_unique<StandardInstrumentations>(*TheContext, true);
+
+    TheSI->registerCallbacks(*ThePIC);
+
+    TheFPM->addPass(InstCombinePass());
+    TheFPM->addPass(ReassociatePass());
+    TheFPM->addPass(GVNPass());
+    TheFPM->addPass(SimplifyCFGPass());
+
+    PassBuilder PB;
+    PB.registerModuleAnalyses(*TheMAM);
+    PB.registerFunctionAnalyses(*TheFAM);
+    PB.crossRegisterProxies(*TheLAM, *TheFAM, *TheCGAM, *TheMAM);
 }
 
 #include <antlr4-runtime/antlr4-runtime.h>
@@ -152,6 +192,10 @@ class IRTOYVisitor : public TOYVisitor {
         if (Value *RetVal = any_cast<Value *>(visit(context->expression()))){
             Builder->CreateRet(RetVal);
             verifyFunction(*TheFunction);
+            TheFPM->run(*TheFunction, *TheFAM);
+
+            TheFunction->print(errs());
+
             return TheFunction;
         }
         TheFunction->eraseFromParent();
@@ -159,9 +203,14 @@ class IRTOYVisitor : public TOYVisitor {
         return nullptr;
     }
 
-    std::any visitParenExpression(TOYParser::ParenExpressionContext *context) override {
-        std::cout << "visitParenExpression" << std::endl;
-        return nullptr;
+    std::any visitParenExprAST(TOYParser::ParenExprASTContext *context) override {
+        return visit(context->expression());
+    }
+
+    std::any visitExternExpression(TOYParser::ExternExpressionContext *context) override {
+        Function *TheFunction = any_cast<Function *>(visit(context->prototype()));
+        TheFunction->setLinkage(GlobalValue::ExternalLinkage);
+        return TheFunction;
     }
 
     std::any visitTopLevelExpression(TOYParser::TopLevelExpressionContext *context) override {
@@ -175,6 +224,7 @@ class IRTOYVisitor : public TOYVisitor {
         Value *RetVal = any_cast<Value *>(visit(context->expression()));
         Builder->CreateRet(RetVal);
         verifyFunction(*TheFunction);
+
         return TheFunction;
     }
 
@@ -199,11 +249,6 @@ class IRTOYVisitor : public TOYVisitor {
             return nullptr;
         }
         return V;
-    }
-
-    std::any visitParenExprAST(TOYParser::ParenExprASTContext *context) override {
-        std::cout << "visitParenExprAST" << std::endl;
-        return nullptr;
     }
 
     std::any visitNumberExprAST(TOYParser::NumberExprASTContext *context) override {
@@ -284,7 +329,7 @@ int main(int, char**){
     BinopPrecedence['-'] = 20;
     BinopPrecedence['*'] = 40; // highest
 
-    InitializeModule();
+    InitializeModuleAndManagers();
 
     const char *src_path = "/home/lixiang/coding/llvm/antlr-toy/test.txt";
     char *source = nullptr;
@@ -308,7 +353,7 @@ int main(int, char**){
     visitor.visit(tree);
 
     // print out generated IR
-    TheModule->print(errs(), nullptr);
+    // TheModule->print(errs(), nullptr);
 
     return 0;
 }

@@ -6,7 +6,11 @@
 git clone -b release/18.x --depth=1 https://github.com/llvm/llvm-project.git
 
 cd llvm-project
-cmake -S llvm -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake -S llvm -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;cross-project-tests;libc;libclc;lld;lldb;openmp;polly;pstl".
 cmake --build build
 ```
 
+使用如下命令获取 llvm 的链接信息
+```bash
+llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native
+```

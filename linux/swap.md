@@ -1,7 +1,7 @@
 # 创建swap
 ```bash
 sudo swapoff -a
-sudo dd if=/dev/zero of=/swapfile bs=1GB count=32
+sudo dd if=/dev/zero of=/swapfile bs=1GB count=64
 sudo chmod 600 /swapfile
 ls -l / | grep swapfile
 sudo mkswap /swapfile
