@@ -6,24 +6,61 @@
 ```antlr
 grammar TOY;
 
+src
+    : toplevel* EOF
+    ;
+
 toplevel
-    : DEF prototype expression                              # FunctionAST
-    | EXTERN prototype                                      # ParenExpression
+    : DEF prototype expression SEMICOLON                    # FunctionAST
+    | EXTERN prototype SEMICOLON                            # ExternExpression
     | expression                                            # TopLevelExpression
     | SEMICOLON                                             # TopLevelSemicolon
     ;
 
 expression
-    : expression (SLASH | ASTERISK) expression              # MulDivAST
-    | expression (PLUS | MINUS) expression                  # AddSubAST
+    : LPAREN expression RPAREN                              # ParenExprAST
     | ID LPAREN (expression (COMMA expression)*)? RPAREN    # CallExprAST
+    | expression (SLASH | ASTERISK) expression              # MulDivAST
+    | expression (PLUS | MINUS) expression                  # AddSubAST
+    | expression ASSIGN expression                          # AssignAST
+    | expression LEFTANGLE expression                       # CmpExprAST
+    | expression userdefinedop expression                   # UserDefExprAST
+    | VAR initializer (COMMA initializer)* IN expression    # VarExprAST
+    | IF expression THEN expression ELSE expression         # IfExprAST
+    | FOR initializer COMMA expression 
+        (COMMA expression)? IN expression                   # ForExprAST
+    | userdefinedop expression                              # UserDefUnaryExprAST
+    | unaryop expression                                    # UnaryOpAST
     | ID                                                    # VariableExprAST
     | NUMBER                                                # NumberExprAST
-    | LPAREN expression RPAREN                              # ParenExprAST
+    ;
+
+unaryop
+    : EXCLAMATION
+    | MINUS
+    ;
+
+userdefinedop
+    : PLUS
+    | MINUS
+    | SLASH
+    | ASTERISK
+    | VBAR
+    | ASSIGN
+    | COLON
+    | AMPERSAND
+    | LEFTANGLE
+    | RIGHTANGLE
+    ;
+
+initializer
+    : ID (ASSIGN expression)?
     ;
 
 prototype
     : ID LPAREN args RPAREN                                 # ProtoTypeAST
+    | UNARY unaryop NUMBER? LPAREN ID RPAREN                # UnaryOpProtoTypeAST
+    | BINARY userdefinedop NUMBER? LPAREN ID ID RPAREN      # BinaryOpProtoTypeAST
     ;
 
 args
@@ -32,6 +69,14 @@ args
 
 DEF: 'def';
 EXTERN: 'extern';
+IF: 'if';
+THEN: 'then';
+ELSE: 'else';
+FOR: 'for';
+IN: 'in';
+UNARY: 'unary';
+BINARY: 'binary';
+VAR: 'var';
 
 fragment DECDIGITS: [0-9];
 fragment DIGITS: '0' | [1-9][0-9]*;
@@ -48,11 +93,17 @@ WS: [ \t\r\n]+ -> skip;
 ID: [a-zA-Z][a-zA-Z0-9]*;
 NUMBER: DIGITS ('.' DECDIGITS+)?;
 
+ASSIGN: '=';
 SLASH: '/';
 ASTERISK: '*';
 PLUS: '+';
 MINUS :'-';
 LEFTANGLE: '<';
+RIGHTANGLE: '>';
+EXCLAMATION: '!';
+VBAR: '|';
+COLON: ':';
+AMPERSAND: '&';
 
 LPAREN: '(';
 RPAREN: ')';
@@ -89,6 +140,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(LLVM_DIR "$(llvm-config --cmakedir)")
 message(STATUS "LLVM_DIR: ${LLVM_DIR}")
 
+set(CMAKE_BUILD_TYPE Debug)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
@@ -106,6 +159,8 @@ target_compile_options(antlr-toy PRIVATE "-fexceptions")
 ```cpp
 #include <iostream>
 #include <string>
+
+#include <glog/logging.h>
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
@@ -133,7 +188,7 @@ using namespace llvm;
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<IRBuilder<>> Builder;
 static std::unique_ptr<Module> TheModule;
-static std::map<std::string, Value *> NamedValues;
+static std::map<std::string, AllocaInst *> NamedValues;
 static std::unique_ptr<FunctionPassManager> TheFPM;
 static std::unique_ptr<LoopAnalysisManager> TheLAM;
 static std::unique_ptr<FunctionAnalysisManager> TheFAM;
@@ -178,6 +233,15 @@ static void InitializeModuleAndManagers(){
 #include "TOYVisitor.h"
 
 class IRTOYVisitor : public TOYVisitor {
+
+    AllocaInst *CreateEntryBlockAlloca(Function *TheFunction,
+                                                StringRef VarName) {
+        IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
+                        TheFunction->getEntryBlock().begin());
+        return TmpB.CreateAlloca(Type::getDoubleTy(*TheContext), nullptr, VarName);
+    }
+
+
     std::any visitFunctionAST(TOYParser::FunctionASTContext *context) override {
         Function *TheFunction = any_cast<Function *>(visit(context->prototype()));
 
@@ -186,10 +250,13 @@ class IRTOYVisitor : public TOYVisitor {
         NamedValues.clear();
 
         for (auto &Arg : TheFunction->args()){
-            NamedValues[std::string(Arg.getName())] = &Arg;
+            AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName());
+            Builder->CreateStore(&Arg, Alloca);
+            NamedValues[std::string(Arg.getName())] = Alloca;
         }
 
-        if (Value *RetVal = any_cast<Value *>(visit(context->expression()))){
+        std::any body = visit(context->expression());
+        if (Value *RetVal = any_cast<Value *>(body)){
             Builder->CreateRet(RetVal);
             verifyFunction(*TheFunction);
             TheFPM->run(*TheFunction, *TheFAM);
@@ -204,10 +271,15 @@ class IRTOYVisitor : public TOYVisitor {
     }
 
     std::any visitParenExprAST(TOYParser::ParenExprASTContext *context) override {
-        return visit(context->expression());
+        LOG(INFO) << "(" << std::endl;
+        std::any ret = visit(context->expression());
+        LOG(INFO) << ")" << std::endl;
+
+        return ret;
     }
 
     std::any visitExternExpression(TOYParser::ExternExpressionContext *context) override {
+        LOG(INFO) << "extern" << std::endl;
         Function *TheFunction = any_cast<Function *>(visit(context->prototype()));
         TheFunction->setLinkage(GlobalValue::ExternalLinkage);
         return TheFunction;
@@ -229,35 +301,53 @@ class IRTOYVisitor : public TOYVisitor {
     }
 
     std::any visitTopLevelSemicolon(TOYParser::TopLevelSemicolonContext *context) override {
-        std::cout << "visitTopLevelSemicolon" << std::endl;
+        LOG(INFO) << ";" << std::endl;
         return nullptr;
     }
 
     std::any visitCallExprAST(TOYParser::CallExprASTContext *context) override {
-        auto args = context->expression();
-        for (auto arg : args) {
-            visit(arg);
+        std::string Callee = context->ID()->getText();
+        if (auto *CalleeF = TheModule->getFunction(Callee)) {
+            LOG(INFO) << Callee << "(" << std::endl;
+            std::vector<Value *> ArgsV;
+            for (auto &Arg : context->expression()){
+                ArgsV.push_back(any_cast<Value *>(visit(Arg)));
+            }
+
+            LOG(INFO) << ")" << std::endl;
+
+            Value *ret = Builder->CreateCall(CalleeF, ArgsV, "calltmp");
+            if (nullptr == ret) {
+                LOG(ERROR) << "Failed to create call instruction";
+                return nullptr;
+            }
+            return ret;
         }
+        LOG(ERROR) << "Unknown function referenced";
         return nullptr;
     }
 
     std::any visitVariableExprAST(TOYParser::VariableExprASTContext *context) override {
-        Value *V = NamedValues[context->ID()->getText()];
+        std::string var_name = context->ID()->getText();
+        LOG(INFO) << var_name << std::endl;
+        AllocaInst *A = NamedValues[var_name];
 
-        if (!V){
-            std::cerr << "Unknown variable name";
+        if (!A){
+            LOG(ERROR) << "Unknown variable name: " << var_name << " in visitVariableExprAST" << std::endl;
             return nullptr;
         }
-        return V;
+        Value *ret = Builder->CreateLoad(A->getAllocatedType(), A, var_name);
+
+        return ret;
     }
 
     std::any visitNumberExprAST(TOYParser::NumberExprASTContext *context) override {
         std::string number = context->NUMBER()->getText();
         double num = std::stod(number);
-        // std::cout << "visitNumberExprAST, num: " << num << std::endl;
+        LOG(INFO) << num << std::endl;
         Value *val = ConstantFP::get(*TheContext, APFloat(num));
         if (nullptr == val) {
-            std::cerr << "Failed to create constant";
+            LOG(ERROR) << "Failed to create constant";
             return nullptr;
         }
         return val;
@@ -265,6 +355,7 @@ class IRTOYVisitor : public TOYVisitor {
 
     std::any visitAddSubAST(TOYParser::AddSubASTContext *context) override {
         Value *L = any_cast<Value *>(visit(context->expression(0)));
+        LOG(INFO) << "+" << std::endl;
         Value *R = any_cast<Value *>(visit(context->expression(1)));
 
         if (!L || !R){
@@ -276,13 +367,14 @@ class IRTOYVisitor : public TOYVisitor {
         } else if (context->MINUS() != nullptr){
             return Builder->CreateFSub(L, R, "subtmp");
         } else {
-            std::cerr << "Invalid operator";
+            LOG(ERROR) << "Invalid operator";
             return nullptr;
         }
     }
 
     std::any visitMulDivAST(TOYParser::MulDivASTContext *context) override {
         Value *L = any_cast<Value *>(visit(context->expression(0)));
+        LOG(INFO) << "*" << std::endl;
         Value *R = any_cast<Value *>(visit(context->expression(1)));
 
         if (!L || !R){
@@ -294,7 +386,7 @@ class IRTOYVisitor : public TOYVisitor {
         } else if (context->SLASH() != nullptr){
             return Builder->CreateFDiv(L, R, "divtmp");
         } else {
-            std::cerr << "Invalid operator";
+            LOG(ERROR) << "Invalid operator";
             return nullptr;
         }
     }
@@ -303,27 +395,376 @@ class IRTOYVisitor : public TOYVisitor {
         int arg_size = context->args()->ID().size();
         std::vector<Type *> Doubles(arg_size, Type::getDoubleTy(*TheContext));
         FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), Doubles, false);
-        Function *F = Function::Create(FT, Function::ExternalLinkage, context->ID()->getText(), TheModule.get());
+        std::string function_name = context->ID()->getText();
+        Function *F = Function::Create(FT, Function::ExternalLinkage, function_name, TheModule.get());
 
         unsigned Idx = 0;
         for (auto &Arg : F->args()){
-            Arg.setName(context->args()->ID(Idx)->getText());
-            Idx++;
+            Arg.setName(context->args()->ID(Idx++)->getText());
         }
+
+        LOG(INFO) << function_name << "(";
+        for (auto &Arg : F->args()){
+            LOG(INFO) << Arg.getName().str();
+        }
+        LOG(INFO) << ")" << std::endl;
 
         return F;
     }
 
     std::any visitArgs(TOYParser::ArgsContext *context) override {
-        std::cout << "visitArgs" << std::endl;
+        LOG(INFO) << "visitArgs" << std::endl;
         return nullptr;
+    }
+    
+    std::any visitCmpExprAST(TOYParser::CmpExprASTContext *context) override {
+        Value *L = any_cast<Value *>(visit(context->expression(0)));
+        LOG(INFO) << "<" << std::endl;
+        Value *R = any_cast<Value *>(visit(context->expression(1)));
+
+        if (!L || !R){
+            return nullptr;
+        }
+
+        if (context->LEFTANGLE() != nullptr) {
+            L = Builder->CreateFCmpULT(L, R, "cmptmp");
+        } else {
+            LOG(ERROR) << "Invalid operator";
+            return nullptr;
+        }
+
+        return Builder->CreateUIToFP(L, Type::getDoubleTy(*TheContext), "booltmp");
+    }
+
+    std::any visitIfExprAST(TOYParser::IfExprASTContext *context) override {
+        LOG(INFO) << "if" << std::endl;
+        Value *CondV = any_cast<Value *>(visit(context->expression(0)));
+        if (!CondV){
+            return nullptr;
+        }
+
+        CondV = Builder->CreateFCmpONE(
+            CondV, ConstantFP::get(*TheContext, APFloat(0.0)), "ifcond");
+
+        Function *TheFunction = Builder->GetInsertBlock()->getParent();
+
+        BasicBlock *ThenBB = BasicBlock::Create(*TheContext, "then", TheFunction);
+        BasicBlock *ElseBB = BasicBlock::Create(*TheContext, "else");
+        BasicBlock *MergeBB = BasicBlock::Create(*TheContext, "ifcont");
+
+        Builder->CreateCondBr(CondV, ThenBB, ElseBB);
+
+        Builder->SetInsertPoint(ThenBB);
+
+        LOG(INFO) << "then" << std::endl;
+        Value *ThenV = any_cast<Value *>(visit(context->expression(1)));
+        if (!ThenV){
+            return nullptr;
+        }
+
+        Builder->CreateBr(MergeBB);
+        ThenBB = Builder->GetInsertBlock();
+
+        TheFunction->insert(TheFunction->end(), ElseBB);
+        Builder->SetInsertPoint(ElseBB);
+
+        LOG(INFO) << "else" << std::endl;
+        Value *ElseV = any_cast<Value *>(visit(context->expression(2)));
+        if (!ElseV){
+            return nullptr;
+        }
+
+        Builder->CreateBr(MergeBB);
+        ElseBB = Builder->GetInsertBlock();
+
+        TheFunction->insert(TheFunction->end(), MergeBB);
+        Builder->SetInsertPoint(MergeBB);
+        PHINode *PN = Builder->CreatePHI(Type::getDoubleTy(*TheContext), 2, "iftmp");
+        
+        PN->addIncoming(ThenV, ThenBB);
+        PN->addIncoming(ElseV, ElseBB);
+
+        Value *ret = PN;
+        return ret;
+    }
+
+    std::any visitInitializer(TOYParser::InitializerContext *context) override {
+        std::string var_name = context->ID()->getText();
+        LOG(INFO) << var_name << " = " << std::endl;
+
+        Value *Val = any_cast<Value *>(visit(context->expression()));
+        if (!Val){
+            LOG(ERROR) << "Failed to get value" << std::endl;
+            return nullptr;
+        }
+
+        AllocaInst *Alloca = nullptr;
+        if (NamedValues.find(var_name) == NamedValues.end()){
+            Alloca = Builder->CreateAlloca(Type::getDoubleTy(*TheContext), 0, var_name);
+            NamedValues[var_name] = Alloca;
+        } else {
+            Alloca = NamedValues[var_name];
+        }
+
+        return Val;
+    }
+
+    std::any visitSrc(TOYParser::SrcContext *context) override {
+        LOG(INFO) << "visitSrc" << std::endl;
+        return visitChildren(context);
+    }
+
+    std::any visitVarExprAST(TOYParser::VarExprASTContext *context) override {
+        std::vector<AllocaInst *> OldBindings;
+
+        Function *TheFunction = Builder->GetInsertBlock()->getParent();
+
+        for (unsigned i = 0, e = context->initializer().size(); i != e; ++i) {
+            const std::string &var_name = context->initializer(i)->ID()->getText();
+            
+            LOG(INFO) << var_name << " = " << std::endl;
+            Value *InitVal;
+            if (context->initializer(i)->expression() != nullptr){
+                InitVal = any_cast<Value *>(visit(context->initializer(i)->expression()));
+                if (!InitVal){
+                    return nullptr;
+                }
+            } else {
+                InitVal = ConstantFP::get(*TheContext, APFloat(0.0));
+            }
+
+            AllocaInst *Alloca = Builder->CreateAlloca(Type::getDoubleTy(*TheContext), 0, var_name);
+            Builder->CreateStore(InitVal, Alloca);
+            OldBindings.push_back(NamedValues[var_name]);
+
+            NamedValues[var_name] = Alloca;
+        }
+
+        Value *BodyVal = any_cast<Value *>(visit(context->expression()));
+        if (!BodyVal){
+            LOG(ERROR) << "Failed to get value" << std::endl;
+            return nullptr;
+        }
+
+        for (unsigned i = 0, e = context->initializer().size(); i != e; ++i) {
+            const std::string &var_name = context->initializer(i)->ID()->getText();
+            NamedValues[var_name] = OldBindings[i];
+        }
+
+        return BodyVal;
+    }
+
+    std::any visitForExprAST(TOYParser::ForExprASTContext *context) override {
+        LOG(INFO) << "for" << std::endl;
+
+        Value *Start = any_cast<Value *>(visit(context->initializer()));
+        if (!Start){
+            return nullptr;
+        }
+
+        Function *TheFunction = Builder->GetInsertBlock()->getParent();
+
+        std::string var_name = context->initializer()->ID()->getText();
+        AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, var_name);
+
+        BasicBlock *PreheaderBB = Builder->GetInsertBlock();
+        BasicBlock *LoopBB = BasicBlock::Create(*TheContext, "loop", TheFunction);
+
+        Builder->CreateBr(LoopBB);
+
+        Builder->SetInsertPoint(LoopBB);
+
+        AllocaInst *OldVal = NamedValues[var_name];
+        NamedValues[var_name] = Alloca;
+
+        PHINode *Variable = 
+            Builder->CreatePHI(Type::getDoubleTy(*TheContext), 2, var_name);
+        Variable->addIncoming(Start, PreheaderBB);
+
+        LOG(INFO) << "for expression size: " << context->expression().size() << std::endl;
+ 
+        if (context->expression(2) != nullptr) {
+            visit(context->expression(2));
+        } else {
+            visit(context->expression(1));
+        }
+        
+        Value *StepVal = nullptr;
+        if (context->expression(2) != nullptr){
+            StepVal = any_cast<Value *>(visit(context->expression(1)));
+            if (!StepVal){
+                return nullptr;
+            }
+        } else {
+            StepVal = ConstantFP::get(*TheContext, APFloat(1.0));
+        }
+        Value *EndCond = any_cast<Value *>(visit(context->expression(0)));
+
+        Value *CurVar = Builder->CreateLoad(Alloca->getAllocatedType(), Alloca, var_name);
+        Value *NextVar = Builder->CreateFAdd(CurVar, StepVal, "nextvar");
+        Builder->CreateStore(NextVar, Alloca);
+
+        EndCond = Builder->CreateFCmpONE(
+            EndCond, ConstantFP::get(*TheContext, APFloat(0.0)), "loopcond");
+
+        BasicBlock *LoopEndBB = Builder->GetInsertBlock();
+        BasicBlock *AfterBB = BasicBlock::Create(*TheContext, "afterloop", TheFunction);
+
+        Builder->CreateCondBr(EndCond, LoopBB, AfterBB);
+        Builder->SetInsertPoint(AfterBB);
+
+        Variable->addIncoming(NextVar, LoopEndBB);
+
+        if (OldVal){
+            NamedValues[var_name] = OldVal;
+        } else {
+            NamedValues.erase(var_name);
+        }
+
+        Value *retVal = Constant::getNullValue(Type::getDoubleTy(*TheContext));
+        return retVal;
+    }
+
+    std::any visitUnaryOpProtoTypeAST(TOYParser::UnaryOpProtoTypeASTContext *context) override {
+        std::string func_name = "unary";
+        func_name += context->unaryop()->getText();
+
+        Function *F = TheModule->getFunction(func_name);
+        if (!F){
+            std::vector<Type *> Doubles(1, Type::getDoubleTy(*TheContext));
+            FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), Doubles, false);
+            F = Function::Create(FT, Function::ExternalLinkage, func_name, TheModule.get());
+
+            F->arg_begin()->setName(context->ID()->getText());
+            std::cout << func_name << "(" << context->ID()->getText() << ")" << std::endl;
+
+            return F;
+        }
+        LOG(INFO) << "visitUnaryOpProtoTypeAST" << std::endl;
+        return nullptr;
+    }
+
+    std::any visitAssignAST(TOYParser::AssignASTContext *context) override {
+        TOYParser::VariableExprASTContext *LHSE = 
+            static_cast<TOYParser::VariableExprASTContext *>(context->expression(0));
+        std::string var_name = LHSE->ID()->getText();
+        LOG(INFO) << var_name << " = " << std::endl;
+
+        Value *Val = any_cast<Value *>(visit(context->expression(1)));
+        if (!Val){
+            LOG(ERROR) << "Failed to get value" << std::endl;
+            return nullptr;
+        }
+
+        Value *Variable = NamedValues[var_name];
+        if (!Variable){
+            LOG(ERROR) << "Unknown variable name: " << var_name << " in visitAssignAST" << std::endl;
+            return nullptr;
+        }
+
+        Value *ret = Builder->CreateStore(Val, Variable);
+        return ret;
+    }
+
+    std::any visitBinaryOpProtoTypeAST(TOYParser::BinaryOpProtoTypeASTContext *context) override {
+        std::string func_name = "binary";
+        func_name += context->userdefinedop()->getText();
+        
+        Function *F = TheModule->getFunction(func_name);
+        if (!F){
+            std::vector<Type *> Doubles(2, Type::getDoubleTy(*TheContext));
+            FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), Doubles, false);
+            F = Function::Create(FT, Function::ExternalLinkage, func_name, TheModule.get());
+
+            F->arg_begin()[0].setName(context->ID(0)->getText());
+            F->arg_begin()[1].setName(context->ID(1)->getText());
+
+            LOG(INFO) << func_name << "(" << context->ID(0)->getText() << ", " << context->ID(1)->getText() << ")" << std::endl;
+
+            return F;
+        }
+
+        return nullptr;
+    }
+
+    std::any visitUserDefUnaryExprAST(TOYParser::UserDefUnaryExprASTContext *context) override {
+        std::string func_name = "unary";
+        func_name += context->userdefinedop()->getText();
+
+        LOG(INFO) << func_name << std::endl;
+
+        Function *F = TheModule->getFunction(func_name);
+        if (!F){
+            LOG(ERROR) << "Unknown unary operator";
+            return nullptr;
+        }
+
+        Value *OperandV = any_cast<Value *>(visit(context->expression()));
+        if (!OperandV){
+            return nullptr;
+        }
+
+        return Builder->CreateCall(F, OperandV, "unop");
+    }
+
+    std::any visitUserDefExprAST(TOYParser::UserDefExprASTContext *context) override {
+        std::string func_name = "binary";
+        func_name += context->userdefinedop()->getText();
+
+        Function *F = TheModule->getFunction(func_name);
+        if (!F){
+            LOG(ERROR) << "Unknown binary operator";
+            return nullptr;
+        }
+
+        Value *L = any_cast<Value *>(visit(context->expression(0)));
+        LOG(INFO) << func_name << std::endl;
+        Value *R = any_cast<Value *>(visit(context->expression(1)));
+
+        if (!L || !R){
+            return nullptr;
+        }
+
+        Value *ret = Builder->CreateCall(F, {L, R}, "binop");
+        return ret;
+    }
+
+    std::any visitUnaryop(TOYParser::UnaryopContext *context) override {
+        return nullptr;
+    }
+
+    std::any visitUserdefinedop(TOYParser::UserdefinedopContext *context) override {
+        return nullptr;
+    }
+
+    std::any visitUnaryOpAST(TOYParser::UnaryOpASTContext *context) override {
+        std::string func_name = "unary";
+        func_name += context->unaryop()->getText();
+        
+        Function *F = TheModule->getFunction(func_name);
+        if (!F){
+            LOG(ERROR) << "Unknown unary operator";
+            return nullptr;
+        }
+        Value *OperandV = any_cast<Value *>(visit(context->expression()));
+        if (!OperandV){
+            return nullptr;
+        }
+        
+        Value *ret = Builder->CreateCall(F, OperandV, "unop");
+        return ret;
     }
 };
 ```
 
 定义 `main` 函数
 ```cpp
-int main(int, char**){
+int main(int argc, char** argv){
+    google::InitGoogleLogging(argv[0]);
+
+    // set log level to info
+    FLAGS_logtostderr = 1;
+
     BinopPrecedence['<'] = 10;
     BinopPrecedence['+'] = 20;
     BinopPrecedence['-'] = 20;
@@ -347,7 +788,7 @@ int main(int, char**){
     TOYLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
     TOYParser parser(&tokens);
-    antlr4::tree::ParseTree *tree = parser.toplevel();
+    antlr4::tree::ParseTree *tree = parser.src();
 
     IRTOYVisitor visitor;
     visitor.visit(tree);
