@@ -796,8 +796,73 @@ int main(int argc, char** argv){
     // print out generated IR
     // TheModule->print(errs(), nullptr);
 
+    InitializeAllTargetInfos();
+    InitializeAllTargets();
+    InitializeAllTargetMCs();
+    InitializeAllAsmParsers();
+    InitializeAllAsmPrinters();
+
+    auto TargetTriple = sys::getDefaultTargetTriple();
+    TheModule->setTargetTriple(TargetTriple);
+
+    std::string Error;
+    auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
+
+    if (!Target){
+        LOG(ERROR) << Error << std::endl;
+        return 1;
+    }
+
+    auto CPU = "generic";
+    auto Features = "";
+
+    TargetOptions opt;
+    auto TheTargetMachine = Target->createTargetMachine(
+        TargetTriple, CPU, Features, opt, Reloc::PIC_);
+
+    TheModule->setDataLayout(TheTargetMachine->createDataLayout());
+
+    auto Filename = "output.o";
+    std::error_code EC;
+    raw_fd_ostream dest(Filename, EC, sys::fs::OF_None);
+
+    if (EC){
+        LOG(ERROR) << "Could not open file: " << EC.message() << std::endl;
+        return 1;
+    }
+
+    legacy::PassManager pass;
+    auto FileType = CodeGenFileType::ObjectFile;
+
+    if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)){
+        LOG(ERROR) << "TheTargetMachine can't emit a file of this type" << std::endl;
+        return 1;
+    }
+
+    pass.run(*TheModule);
+    dest.flush();
+
+    outs() << "Wrote " << Filename << "\n";
+
     return 0;
 }
 ```
 
 `text.txt` 中的内容为测试；
+
+# 第8章实验
+`test.txt`:
+```txt
+def average(x y) (x + y) * 0.5;
+```
+
+需要执行：
+```bash
+cd antlr-toy/
+cmake --build build/
+
+./build/bin/antlr-toy
+clang test.cpp output.o -lstdc++ -o main
+./main 
+average of 3.0 and 4.0: 3.5
+```
