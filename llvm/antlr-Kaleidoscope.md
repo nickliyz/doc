@@ -1,10 +1,10 @@
-# TOY with antlr
+# Kaleidoscope with antlr
 
 参考资料：[My First Language Frontend with LLVM Tutorial](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html)
 
-`TOY.g4`语法：
+`Kaleidoscope.g4`语法：
 ```antlr
-grammar TOY;
+grammar Kaleidoscope;
 
 src
     : toplevel* EOF
@@ -115,6 +115,7 @@ SEMICOLON: ';';
 ```text
 [requires]
 antlr4-cppruntime/4.13.1
+glog/0.7.1
 
 [build_requires]
 antlr4/4.13.1
@@ -126,7 +127,7 @@ cmake
 antlr4 生成Lexer:
 ```bash
 source build/activate_run.sh
-antlr4 antlr4 -Dlanguage=Cpp -visitor TOY.g4
+antlr4 antlr4 -Dlanguage=Cpp -visitor Kaleidoscope.g4
 
 conan install -if build -r conancenter --build=missing -g=virtualrunenv .
 ```
@@ -134,7 +135,7 @@ conan install -if build -r conancenter --build=missing -g=virtualrunenv .
 `CMakeLists.txt`配置：
 ```cmake
 cmake_minimum_required(VERSION 3.15.0)
-project(antlr-toy VERSION 0.1.0 LANGUAGES C CXX)
+project(antlr-Kaleidoscope VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(LLVM_DIR "$(llvm-config --cmakedir)")
@@ -149,10 +150,10 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(LLVM 18.1.8 REQUIRED CONFIG)
 
-file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-add_executable(antlr-toy ${SRCS})
-target_link_libraries(antlr-toy ${CONAN_LIBS} Threads::Threads ${LLVM_AVAILABLE_LIBS})
-target_compile_options(antlr-toy PRIVATE "-fexceptions")
+# file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+add_executable(antlr-Kaleidoscope main.cpp KaleidoscopeLexer.cpp KaleidoscopeParser.cpp KaleidoscopeBaseVisitor.cpp KaleidoscopeVisitor.cpp)
+target_link_libraries(antlr-Kaleidoscope ${CONAN_LIBS} Threads::Threads ${LLVM_AVAILABLE_LIBS})
+target_compile_options(antlr-Kaleidoscope PRIVATE "-fexceptions")
 ```
 
 实现访问器：
@@ -173,10 +174,16 @@ target_compile_options(antlr-toy PRIVATE "-fexceptions")
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/StandardInstrumentations.h"
 #include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/TargetParser/Host.h"
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
@@ -184,6 +191,7 @@ target_compile_options(antlr-toy PRIVATE "-fexceptions")
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
 
 using namespace llvm;
+using namespace llvm::sys;
 
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<IRBuilder<>> Builder;
@@ -228,11 +236,11 @@ static void InitializeModuleAndManagers(){
 }
 
 #include <antlr4-runtime/antlr4-runtime.h>
-#include "TOYLexer.h"
-#include "TOYParser.h"
-#include "TOYVisitor.h"
+#include "KaleidoscopeLexer.h"
+#include "KaleidoscopeParser.h"
+#include "KaleidoscopeVisitor.h"
 
-class IRTOYVisitor : public TOYVisitor {
+class IRKaleidoscopeVisitor : public KaleidoscopeVisitor {
 
     AllocaInst *CreateEntryBlockAlloca(Function *TheFunction,
                                                 StringRef VarName) {
@@ -242,7 +250,7 @@ class IRTOYVisitor : public TOYVisitor {
     }
 
 
-    std::any visitFunctionAST(TOYParser::FunctionASTContext *context) override {
+    std::any visitFunctionAST(KaleidoscopeParser::FunctionASTContext *context) override {
         Function *TheFunction = any_cast<Function *>(visit(context->prototype()));
 
         BasicBlock *BB = BasicBlock::Create(*TheContext, "entry", TheFunction);
@@ -270,7 +278,7 @@ class IRTOYVisitor : public TOYVisitor {
         return nullptr;
     }
 
-    std::any visitParenExprAST(TOYParser::ParenExprASTContext *context) override {
+    std::any visitParenExprAST(KaleidoscopeParser::ParenExprASTContext *context) override {
         LOG(INFO) << "(" << std::endl;
         std::any ret = visit(context->expression());
         LOG(INFO) << ")" << std::endl;
@@ -278,14 +286,14 @@ class IRTOYVisitor : public TOYVisitor {
         return ret;
     }
 
-    std::any visitExternExpression(TOYParser::ExternExpressionContext *context) override {
+    std::any visitExternExpression(KaleidoscopeParser::ExternExpressionContext *context) override {
         LOG(INFO) << "extern" << std::endl;
         Function *TheFunction = any_cast<Function *>(visit(context->prototype()));
         TheFunction->setLinkage(GlobalValue::ExternalLinkage);
         return TheFunction;
     }
 
-    std::any visitTopLevelExpression(TOYParser::TopLevelExpressionContext *context) override {
+    std::any visitTopLevelExpression(KaleidoscopeParser::TopLevelExpressionContext *context) override {
 
         std::vector<Type *> Doubles(0, Type::getDoubleTy(*TheContext));
         FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), Doubles, false);
@@ -300,12 +308,12 @@ class IRTOYVisitor : public TOYVisitor {
         return TheFunction;
     }
 
-    std::any visitTopLevelSemicolon(TOYParser::TopLevelSemicolonContext *context) override {
+    std::any visitTopLevelSemicolon(KaleidoscopeParser::TopLevelSemicolonContext *context) override {
         LOG(INFO) << ";" << std::endl;
         return nullptr;
     }
 
-    std::any visitCallExprAST(TOYParser::CallExprASTContext *context) override {
+    std::any visitCallExprAST(KaleidoscopeParser::CallExprASTContext *context) override {
         std::string Callee = context->ID()->getText();
         if (auto *CalleeF = TheModule->getFunction(Callee)) {
             LOG(INFO) << Callee << "(" << std::endl;
@@ -327,7 +335,7 @@ class IRTOYVisitor : public TOYVisitor {
         return nullptr;
     }
 
-    std::any visitVariableExprAST(TOYParser::VariableExprASTContext *context) override {
+    std::any visitVariableExprAST(KaleidoscopeParser::VariableExprASTContext *context) override {
         std::string var_name = context->ID()->getText();
         LOG(INFO) << var_name << std::endl;
         AllocaInst *A = NamedValues[var_name];
@@ -341,7 +349,7 @@ class IRTOYVisitor : public TOYVisitor {
         return ret;
     }
 
-    std::any visitNumberExprAST(TOYParser::NumberExprASTContext *context) override {
+    std::any visitNumberExprAST(KaleidoscopeParser::NumberExprASTContext *context) override {
         std::string number = context->NUMBER()->getText();
         double num = std::stod(number);
         LOG(INFO) << num << std::endl;
@@ -353,7 +361,7 @@ class IRTOYVisitor : public TOYVisitor {
         return val;
     }
 
-    std::any visitAddSubAST(TOYParser::AddSubASTContext *context) override {
+    std::any visitAddSubAST(KaleidoscopeParser::AddSubASTContext *context) override {
         Value *L = any_cast<Value *>(visit(context->expression(0)));
         LOG(INFO) << "+" << std::endl;
         Value *R = any_cast<Value *>(visit(context->expression(1)));
@@ -372,7 +380,7 @@ class IRTOYVisitor : public TOYVisitor {
         }
     }
 
-    std::any visitMulDivAST(TOYParser::MulDivASTContext *context) override {
+    std::any visitMulDivAST(KaleidoscopeParser::MulDivASTContext *context) override {
         Value *L = any_cast<Value *>(visit(context->expression(0)));
         LOG(INFO) << "*" << std::endl;
         Value *R = any_cast<Value *>(visit(context->expression(1)));
@@ -391,7 +399,7 @@ class IRTOYVisitor : public TOYVisitor {
         }
     }
 
-    std::any visitProtoTypeAST(TOYParser::ProtoTypeASTContext *context) override {
+    std::any visitProtoTypeAST(KaleidoscopeParser::ProtoTypeASTContext *context) override {
         int arg_size = context->args()->ID().size();
         std::vector<Type *> Doubles(arg_size, Type::getDoubleTy(*TheContext));
         FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), Doubles, false);
@@ -412,12 +420,12 @@ class IRTOYVisitor : public TOYVisitor {
         return F;
     }
 
-    std::any visitArgs(TOYParser::ArgsContext *context) override {
+    std::any visitArgs(KaleidoscopeParser::ArgsContext *context) override {
         LOG(INFO) << "visitArgs" << std::endl;
         return nullptr;
     }
     
-    std::any visitCmpExprAST(TOYParser::CmpExprASTContext *context) override {
+    std::any visitCmpExprAST(KaleidoscopeParser::CmpExprASTContext *context) override {
         Value *L = any_cast<Value *>(visit(context->expression(0)));
         LOG(INFO) << "<" << std::endl;
         Value *R = any_cast<Value *>(visit(context->expression(1)));
@@ -436,7 +444,7 @@ class IRTOYVisitor : public TOYVisitor {
         return Builder->CreateUIToFP(L, Type::getDoubleTy(*TheContext), "booltmp");
     }
 
-    std::any visitIfExprAST(TOYParser::IfExprASTContext *context) override {
+    std::any visitIfExprAST(KaleidoscopeParser::IfExprASTContext *context) override {
         LOG(INFO) << "if" << std::endl;
         Value *CondV = any_cast<Value *>(visit(context->expression(0)));
         if (!CondV){
@@ -488,7 +496,7 @@ class IRTOYVisitor : public TOYVisitor {
         return ret;
     }
 
-    std::any visitInitializer(TOYParser::InitializerContext *context) override {
+    std::any visitInitializer(KaleidoscopeParser::InitializerContext *context) override {
         std::string var_name = context->ID()->getText();
         LOG(INFO) << var_name << " = " << std::endl;
 
@@ -509,12 +517,12 @@ class IRTOYVisitor : public TOYVisitor {
         return Val;
     }
 
-    std::any visitSrc(TOYParser::SrcContext *context) override {
+    std::any visitSrc(KaleidoscopeParser::SrcContext *context) override {
         LOG(INFO) << "visitSrc" << std::endl;
         return visitChildren(context);
     }
 
-    std::any visitVarExprAST(TOYParser::VarExprASTContext *context) override {
+    std::any visitVarExprAST(KaleidoscopeParser::VarExprASTContext *context) override {
         std::vector<AllocaInst *> OldBindings;
 
         Function *TheFunction = Builder->GetInsertBlock()->getParent();
@@ -554,7 +562,7 @@ class IRTOYVisitor : public TOYVisitor {
         return BodyVal;
     }
 
-    std::any visitForExprAST(TOYParser::ForExprASTContext *context) override {
+    std::any visitForExprAST(KaleidoscopeParser::ForExprASTContext *context) override {
         LOG(INFO) << "for" << std::endl;
 
         Value *Start = any_cast<Value *>(visit(context->initializer()));
@@ -625,7 +633,7 @@ class IRTOYVisitor : public TOYVisitor {
         return retVal;
     }
 
-    std::any visitUnaryOpProtoTypeAST(TOYParser::UnaryOpProtoTypeASTContext *context) override {
+    std::any visitUnaryOpProtoTypeAST(KaleidoscopeParser::UnaryOpProtoTypeASTContext *context) override {
         std::string func_name = "unary";
         func_name += context->unaryop()->getText();
 
@@ -644,9 +652,9 @@ class IRTOYVisitor : public TOYVisitor {
         return nullptr;
     }
 
-    std::any visitAssignAST(TOYParser::AssignASTContext *context) override {
-        TOYParser::VariableExprASTContext *LHSE = 
-            static_cast<TOYParser::VariableExprASTContext *>(context->expression(0));
+    std::any visitAssignAST(KaleidoscopeParser::AssignASTContext *context) override {
+        KaleidoscopeParser::VariableExprASTContext *LHSE = 
+            static_cast<KaleidoscopeParser::VariableExprASTContext *>(context->expression(0));
         std::string var_name = LHSE->ID()->getText();
         LOG(INFO) << var_name << " = " << std::endl;
 
@@ -666,7 +674,7 @@ class IRTOYVisitor : public TOYVisitor {
         return ret;
     }
 
-    std::any visitBinaryOpProtoTypeAST(TOYParser::BinaryOpProtoTypeASTContext *context) override {
+    std::any visitBinaryOpProtoTypeAST(KaleidoscopeParser::BinaryOpProtoTypeASTContext *context) override {
         std::string func_name = "binary";
         func_name += context->userdefinedop()->getText();
         
@@ -687,7 +695,7 @@ class IRTOYVisitor : public TOYVisitor {
         return nullptr;
     }
 
-    std::any visitUserDefUnaryExprAST(TOYParser::UserDefUnaryExprASTContext *context) override {
+    std::any visitUserDefUnaryExprAST(KaleidoscopeParser::UserDefUnaryExprASTContext *context) override {
         std::string func_name = "unary";
         func_name += context->userdefinedop()->getText();
 
@@ -707,7 +715,7 @@ class IRTOYVisitor : public TOYVisitor {
         return Builder->CreateCall(F, OperandV, "unop");
     }
 
-    std::any visitUserDefExprAST(TOYParser::UserDefExprASTContext *context) override {
+    std::any visitUserDefExprAST(KaleidoscopeParser::UserDefExprASTContext *context) override {
         std::string func_name = "binary";
         func_name += context->userdefinedop()->getText();
 
@@ -729,15 +737,15 @@ class IRTOYVisitor : public TOYVisitor {
         return ret;
     }
 
-    std::any visitUnaryop(TOYParser::UnaryopContext *context) override {
+    std::any visitUnaryop(KaleidoscopeParser::UnaryopContext *context) override {
         return nullptr;
     }
 
-    std::any visitUserdefinedop(TOYParser::UserdefinedopContext *context) override {
+    std::any visitUserdefinedop(KaleidoscopeParser::UserdefinedopContext *context) override {
         return nullptr;
     }
 
-    std::any visitUnaryOpAST(TOYParser::UnaryOpASTContext *context) override {
+    std::any visitUnaryOpAST(KaleidoscopeParser::UnaryOpASTContext *context) override {
         std::string func_name = "unary";
         func_name += context->unaryop()->getText();
         
@@ -757,7 +765,7 @@ class IRTOYVisitor : public TOYVisitor {
 };
 ```
 
-定义 `main` 函数
+实现 `main` 函数
 ```cpp
 int main(int argc, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -772,7 +780,7 @@ int main(int argc, char** argv){
 
     InitializeModuleAndManagers();
 
-    const char *src_path = "/home/lixiang/coding/llvm/antlr-toy/test.txt";
+    const char *src_path = "/home/lixiang/coding/llvm/antlr-Kaleidoscope/test.txt";
     char *source = nullptr;
     FILE *fp = fopen(src_path, "r");
     if (fp) {
@@ -785,12 +793,12 @@ int main(int argc, char** argv){
         fclose(fp);
     }
     antlr4::ANTLRInputStream input(source);
-    TOYLexer lexer(&input);
+    KaleidoscopeLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
-    TOYParser parser(&tokens);
+    KaleidoscopeParser parser(&tokens);
     antlr4::tree::ParseTree *tree = parser.src();
 
-    IRTOYVisitor visitor;
+    IRKaleidoscopeVisitor visitor;
     visitor.visit(tree);
 
     // print out generated IR
