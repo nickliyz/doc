@@ -864,6 +864,25 @@ int main(int argc, char** argv){
 def average(x y) (x + y) * 0.5;
 ```
 
+`antlr-debug`配置文件:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug ANTLR grammar",
+            "type": "antlr-debug",
+            "request": "launch",
+            "input": "test.txt",
+            "grammar": "TOY.g4",
+            "startRule": "module",
+            "printParseTree": true,
+            "visualParseTree": true
+        }
+    ]
+}
+```
+
 需要执行：
 ```bash
 cd antlr-toy/
