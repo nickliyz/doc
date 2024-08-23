@@ -1,5 +1,10 @@
 # clang format
 
+参考资料
+* [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html)
+* [Clang-Format Style Options](https://clang.llvm.org/docs/ClangFormatStyleOptions.html)
+* [](https://clang.llvm.org/docs/ClangFormattedStatus.html)
+
 clang format 配置文件为 `.clang-format`, 以下解释来自 Copilot:
 ```
 ---
