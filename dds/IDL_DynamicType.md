@@ -1,5 +1,55 @@
 # DynamicType Visitor by Antlr4 Cpp Runtime
 
+## configs
+`conandata.yaml`
+```yaml
+requirements:
+  - "antlr4-cppruntime/4.13.1"
+  - "fast-dds/2.13.3"
+```
+
+`conanfile.py`
+```python
+from conan import ConanFile
+from conan.tools.cmake import cmake_layout, CMakeToolchain
+
+class ConanApplication(ConanFile):
+    package_type = "application"
+    settings = "os", "compiler", "build_type", "arch"
+    generators = "CMakeDeps"
+
+    def layout(self):
+        cmake_layout(self)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.user_presets_path = False
+        tc.generate()
+
+    def requirements(self):
+        requirements = self.conan_data.get('requirements', [])
+        for requirement in requirements:
+            self.requires(requirement)
+```
+
+`CMakeLists.txt`
+```cmake
+cmake_minimum_required(VERSION 3.28)
+project(parser)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_FLAGS "-pthread")
+
+file(GLOB SOURCES_CPP ${PROJECT_SOURCE_DIR}/*.cpp)
+add_executable(parser ${SOURCES_CPP})
+
+target_link_libraries(parser ${CONAN_LIBS})
+```
+
+## code
 ```C++
 #include <iostream>
 #include <any>
