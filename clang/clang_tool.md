@@ -1,5 +1,36 @@
 # clang tool
 
+## 参考资料
+* [How to write RecursiveASTVisitor based ASTFrontendActions.](https://clang.llvm.org/docs/RAVFrontendAction.html)
+
+## `CMakeLists.txt`配置
+```cmake
+cmake_minimum_required(VERSION 3.15.0)
+project(clang-parse1 VERSION 0.1.0 LANGUAGES C CXX)
+
+include_directories(/usr/lib/llvm-10/include)
+set(CMAKE_CXX_STANDARD 14)
+
+add_executable(clang-parse1 main.cpp)
+
+find_package(Clang REQUIRED)
+
+target_link_libraries(clang-parse1 clang-10)
+
+link_directories(/usr/lib/llvm-10/lib)
+
+add_definitions(
+    "-D__STDC_CONSTANT_MACROS"
+    "-D__STDC_LIMIT_MACROS"
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS"
+)
+
+add_executable(tool tool.cpp)
+target_link_libraries(tool clang-cpp LLVM-10)
+```
+
+## 代码
+
 `template <typename T> class IntrusiveRefCntPtr`是一个智能指针, 带有引用计数.
 
 `clang::FileManager` 是一个文件系统管理类, 提供一些文件系统相关的功能.
