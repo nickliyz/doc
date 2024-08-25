@@ -6,7 +6,14 @@
 git clone -b release/18.x --depth=1 https://github.com/llvm/llvm-project.git
 
 cd llvm-project
-cmake -S llvm -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="mlir" -DDLLVM_BUILD_EXAMPLES=True -DLLVM_TARGETS_TO_BUILD="Native;NVPTX;AMDGPU" -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_ASSERTIONS=ON .
+cmake -S llvm -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;mlir;" \
+    -DDLLVM_BUILD_EXAMPLES=ON \
+    -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
+    -DLLVM_TARGETS_TO_BUILD="Native;NVPTX;AMDGPU" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_ASSERTIONS=ON
 cmake --build build
 ```
 

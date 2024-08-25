@@ -4,17 +4,17 @@
 * [MLIR - Getting Started](https://mlir.llvm.org/getting_started/)
 
 ## build
-```
+```bash
 mkdir ~/github/; cd ~/github/
-git clone -b llvmorg-18.1.8 --depth=1 https://github.com/llvm/llvm-project.git
+git clone -b release/18.x --depth=1 https://github.com/llvm/llvm-project.git
 mkdir llvm-project/build
 cd llvm-project/build
 cmake -G Ninja ../llvm \
-   -DLLVM_ENABLE_PROJECTS=mlir \
+   -DLLVM_ENABLE_PROJECTS="mlir;" \
    -DLLVM_BUILD_EXAMPLES=ON \
    -DLLVM_TARGETS_TO_BUILD="Native;NVPTX;AMDGPU" \
    -DCMAKE_BUILD_TYPE=Release \
-   -DLLVM_ENABLE_ASSERTIONS=ON
+   -DLLVM_ENABLE_ASSERTIONS=ON ..
 # Using clang and lld speeds up the build, we recommend adding:
 #  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_ENABLE_LLD=ON
 # CCache can drastically speed up further rebuilds, try adding:
