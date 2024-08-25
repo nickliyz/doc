@@ -70,28 +70,16 @@ int main(int argc, char** argv){
     cl::ParseCommandLineOptions(argc, argv, "LLVM hello world\n");
 
     LLVMContext context;
-    std::string error;
-    ErrorOr<std::unique_ptr<MemoryBuffer>> mbr = 
-        MemoryBuffer::getFile(FileName);
 
-    if (!mbr) {
-        errs() << "Error reading bitcode file: " << error << "\n";
-        return 1;
-    }
-
-    std::unique_ptr<MemoryBuffer> mb = std::move(*mbr);
+    std::unique_ptr<MemoryBuffer> mb = std::move(*MemoryBuffer::getFile(FileName));
 
     Expected<std::unique_ptr<Module>> mr = parseBitcodeFile(*mb, context);
     if (!mr) {
-        errs() << "Error reading bitcode file: " << error << "\n";
+        errs() << "Error reading bitcode file: " << mr.takeError() << "\n";
         return 1;
     }
 
-    std::unique_ptr<Module> m = std::move(mr.get());
-    if (!m) {
-        errs() << "Error reading bitcode file: " << error << "\n";
-        return 1;
-    }
+    std::unique_ptr<Module> m = std::move(*mr);
 
     raw_os_ostream os(std::cout);
     for (auto i = m->getFunctionList().begin(); i != m->getFunctionList().end(); i++) {

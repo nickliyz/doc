@@ -61,3 +61,18 @@ clang main.o sum.o -o sum
 clang -emit-llvm -c main.c -S -o main.ll
 clang -emit-llvm -c sum.c -S -o sum.ll
 ```
+
+## clang
+clang打印语法树：
+```
+clang -Xclang -ast-dump hello.c
+```
+或者
+```
+clang -cc1 -ast-dump hello.c
+```
+
+使用 `-###- 可以显示有 clang 驱动程序调用的程序列表，例如：
+```
+clang hello.c -###
+```
