@@ -76,3 +76,8 @@ clang -cc1 -ast-dump hello.c
 ```
 clang hello.c -###
 ```
+
+clang 打印代码的 Tokens：
+```
+clang -cc1 -dump-tokens hello.c
+```

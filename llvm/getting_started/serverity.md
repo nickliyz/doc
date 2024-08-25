@@ -92,4 +92,9 @@ int main(int argc, char**argv){
 cmake -B build
 cmake --build build
 ./build/serverity hello.c
+
+# <<Output>>
+
+Serverity: 3 File: hello.c Line: 2 Col: 5 Category: Semantic Issue Message: call to undeclared library function 'printf' with type 'int (const char *, ...)'; ISO C99 and later do not support implicit function declarations
+Serverity: 3 File: hello.c Line: 2 Col: 30 Category: Parse Issue Message: expected ';' after expression
 ```
