@@ -34,3 +34,9 @@ mlir-tblgen -I /home/lixiang/github/llvm-project/mlir/include -gen-op-defs Ops.t
 mlir-tblgen -I /home/lixiang/github/llvm-project/mlir/include -gen-dialect-decls Ops.td -o Dialect.h.inc
 mlir-tblgen -I /home/lixiang/github/llvm-project/mlir/include -gen-dialect-defs Ops.td -o Dialect.cpp.inc
 ```
+
+## 运行官方示例
+```
+cmake --build build/ --target toyc-ch2
+./build/bin/toyc-ch2 mlir/test/Examples/Toy/Ch2/codegen.toy -emit=mlir -mlir-print-debuginfo
+```
