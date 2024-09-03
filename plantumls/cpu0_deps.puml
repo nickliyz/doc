@@ -1,0 +1,15 @@
+@startuml LLVM_Backend
+ 
+hide circle
+hide empty members
+
+LLVMCCpu0CodeGen o-- LLVMCpu0AsmPrinter
+LLVMCCpu0CodeGen o-- LLVMCpu0Desc
+LLVMCCpu0CodeGen o-- LLVMCpu0Info
+LLVMCCpu0Desc o-- LLVMCpu0AsmPrinter
+LLVMCCpu0Desc o-- LLVMCpu0Info
+LLVMCCpu0Disassembler o-- LLVMCpu0Info
+LLVMCCpu0AsmParser o-- LLVMCpu0Desc
+LLVMCCpu0AsmParser o-- LLVMCpu0Info
+
+@enduml
