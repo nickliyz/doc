@@ -1,0 +1,172 @@
+@startuml LLVM_Backend
+ 
+hide circle
+hide empty members
+
+skinparam {
+    ClassBackgroundColor transparent
+    ClassHeaderBackgroundColor whitesmoke
+    ClassStereotypeFontColor transparent
+    ' linetype ortho
+}
+
+' class note {
+' -view-block-freq-propagation-dags
+' -view-dag-combine-lt-dags
+' -view-dag-combine1-dags
+' -view-dag-combine2-dags
+' -view-isel-dags
+' -view-legalize-dags
+' -view-legalize-types-dags
+' -view-machine-block-freq-propagation-dags
+' -view-misched-dags
+' -view-sched-dags
+' -view-sunit-dags
+' }
+
+package module_pass {
+    class MPPassManager
+    ' class Pass
+    class PMDataManager
+}
+
+package selection_dag {
+    class SelectionDAGISel
+    class Cpu0DAGToDAGISel
+    class Cpu0SEDAGToDAGISel
+}
+
+package module {
+    class "PMDataManager" as PMDataManager2
+    class Module
+    class FPPassManager
+    class "Pass" as Pass2
+    class ModulePass
+}
+
+package machine_function_pass {
+    class "Pass" as Pass3
+    class FunctionPass
+    class MachineFunctionPass
+    class PEI
+}
+
+' package Cpu0 {
+package asm_printer {
+    class AsmPrinter
+    class Cpu0AsmPrinter
+}
+
+package register_info {
+    class MCRegisterInfo
+    class TargetRegisterInfo
+    class Cpu0GenRegisterInfo
+    class Cpu0RegisterInfo
+    class Cpu0SERegisterInfo
+}
+
+package instr_info {
+    class MCInstrInfo
+    class TargetInstrInfo
+    class Cpu0InstrInfo
+    class Cpu0GenInstrInfo
+    class Cpu0SEInstrInfo
+}
+
+package subtarget_info {
+    class MCSubtargetInfo
+    class TargetSubtargetInfo
+    class Cpu0GenSubtargetInfo
+    class Cpu0Subtarget
+}
+
+package target_machine {
+    class TargetMachine
+    class LLVMTargetMachine
+    class Cpu0TargetMachine
+    class Cpu0ebTargetMachine
+}
+' }
+
+package streamer {
+    class MCStreamer
+    class MCAsmStreamer
+}
+
+package inst_printer {
+    class MCInstPrinter
+    class Cpu0InstPrinter
+}
+
+MachineFunction o-- TargetSubtargetInfo:STI
+MCRegisterInfo <|-- TargetRegisterInfo
+TargetRegisterInfo <|-- Cpu0GenRegisterInfo
+Cpu0GenRegisterInfo <|-- Cpu0RegisterInfo
+Cpu0RegisterInfo <|-- Cpu0SERegisterInfo
+Cpu0SERegisterInfo --o Cpu0SEInstrInfo:RI
+Cpu0InstrInfo --|> Cpu0GenInstrInfo
+Cpu0GenInstrInfo --|> TargetInstrInfo
+TargetInstrInfo --|> MCInstrInfo
+
+SelectionDAGISel o-- TargetLowering:TLI
+SelectionDAGISel o-- MachineFunction:MF
+
+PMDataManager <|-- MPPassManager
+' Pass <|-- MPPassManager
+MPPassManager o-- Pass2:PassVector[]
+
+
+Pass2 <|-- ModulePass
+ModulePass <|-- FPPassManager
+FPPassManager --|> PMDataManager2
+PMDataManager2 o--Pass3:PassVector[]
+' FPPassManager ..> FunctionPass:runOnFunction()
+' Function ..> FPPassManager:runOnFunction()
+FPPassManager <.. Module:runOnModule()
+Module o-- Function:FunctionList[]
+Function ..> FunctionPass:runOnFunction()
+
+PassManagerImpl o-- PMDataManager:PassManagers[]
+PassManager o-- PassManagerImpl:PM
+
+MachineFunctionPass <|-- PEI
+PEI ..> TargetRegisterInfo:eliminateFrameIndex()
+PEI ..> TargetRegisterInfo:requiresRegisterScavenging()
+MachineFunctionPass <|-- AsmPrinter
+Cpu0AsmPrinter --|> AsmPrinter
+
+FPPassManager ..> Cpu0SEDAGToDAGISel:runOnMachineFunction()
+FPPassManager ..> AsmPrinter:runOnMachineFunction()
+FPPassManager ..> PEI:runOnMachineFunction()
+
+Pass3 <|-- FunctionPass
+FunctionPass <|-- MachineFunctionPass
+SelectionDAGISel --|> MachineFunctionPass
+Cpu0DAGToDAGISel --|> SelectionDAGISel
+Cpu0SEDAGToDAGISel --|> Cpu0DAGToDAGISel
+
+TargetRegistry ..> Target:lookupTarget()
+Target ..> RegisterTargetMachine:Allocator()
+RegisterTargetMachine ..> Cpu0ebTargetMachine:NEW
+LLVMTargetMachine --|> TargetMachine
+Cpu0TargetMachine --|> LLVMTargetMachine
+Cpu0ebTargetMachine --|> Cpu0TargetMachine
+
+MCSubtargetInfo <|-- TargetSubtargetInfo 
+TargetSubtargetInfo <|-- Cpu0GenSubtargetInfo
+Cpu0GenSubtargetInfo <|-- Cpu0Subtarget
+Cpu0TargetMachine o-- Cpu0Subtarget:DefaultSubtarget
+Cpu0SEInstrInfo --|> Cpu0InstrInfo
+Cpu0Subtarget o-- Cpu0InstrInfo:InstrInfo
+
+SelectionDAGISel o-- BasicBlock:LLVMBB
+BasicBlock o-- Instruction:InstList[]
+SelectionDAGISel o-- SelectionDAG:CurDAG
+
+AsmPrinter o-- MCStreamer:OutStreamer
+MCStreamer <|-- MCAsmStreamer
+MCStreamer o-- MCTargetStreamer:TargetStreamer
+MCInstPrinter <|-- Cpu0InstPrinter
+MCAsmStreamer o-- MCInstPrinter:InstPrinter
+
+@enduml
