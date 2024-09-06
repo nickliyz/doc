@@ -1,0 +1,154 @@
+@startuml Android_Security
+
+skinparam {
+    ClassBackgroundColor transparent
+    ClassBorderColor transparent
+    ' linetype ortho
+    ' linetype polyline
+}
+ 
+hide circle
+hide empty members
+
+package java {
+    class SSLContext
+    class SSLContextSpi
+    class SSLSessionContext
+    class AbstractSessionContext
+    class ClientSessionContext
+    class ServerSessionContext
+    class OpenSSLContextImpl
+    interface SSLHandshakeCallbacks {
+        onSSLStateChange()
+        clientCertificateRequested()
+        clientPSKKeyRequested()
+    }
+    class ConscryptEngine {
+        onSSLStateChange()
+        clientCertificateRequested()
+        serverCertificateRequested()
+    }
+    class NativeSSL
+    class SSLParametersImpl
+    class X509KeyManager
+    class X509TrustManager
+    class PublicKey
+    class PrivateKey
+    class OpenSSLKey {
+        fromPrivateKeyForTLSStackOnly()
+        wrapJCAPrivateKeyForTLSStackOnly()
+    }
+    class X509Certificate
+    class OpenSSLECPrivateKey
+    package native {
+        class NativeCrypto
+        class "NativeCrypto" as NativeCrypto2
+    }
+    class CryptoUpcalls
+    package keystore {
+        class SignatureSpi
+        class AndroidKeyStoreSignatureSpiBase
+        class Signature
+        class AndroidKeyStoreBCWorkaroundProvider
+        class NONE
+        class AndroidKeyStoreECDSASignatureSpi
+        class Security
+    }
+}
+
+Signature <... CryptoUpcalls:sign()
+SignatureSpi <|-- Signature
+AndroidKeyStoreSignatureSpiBase --|> SignatureSpi
+AndroidKeyStoreECDSASignatureSpi --|> AndroidKeyStoreSignatureSpiBase
+NONE --|> AndroidKeyStoreECDSASignatureSpi
+AndroidKeyStoreBCWorkaroundProvider <.. NONE:putSignatureImpl("NONEwithECDSA")
+Security <.. AndroidKeyStoreBCWorkaroundProvider:addProvider()
+
+package evp_pkey {
+    class "EVP_PKEY" as EVP_PKEY2
+    class EVP_PKEY
+}
+
+class "g_engine" as ENGINE
+class "g_ecdsa_method" as ECDSA_METHOD
+
+class "kMethod" as SSL_METHOD
+class "kTLSProtocolMethod" as SSL_PROTOCOL_METHOD
+class "ssl_noop_x509_method" as SSL_X509_METHOD
+class "CRYPTO_EX_DATA" as CRYPTO_EX_DATA2
+
+SSL_CREDENTIAL ---o CERT:default_credential
+EVP_PKEY2 ---o SSL_CREDENTIAL:privkey
+
+SSL_METHOD o--- SSL_PROTOCOL_METHOD:method
+SSL_METHOD o--- SSL_X509_METHOD:x509_method
+SSL_CTX o--- SSL_PROTOCOL_METHOD:method
+SSL_CTX o--- SSL_X509_METHOD:x509_method
+
+SSLContext o--- SSLContextSpi:contextSpi
+SSLContextSpi <|--- OpenSSLContextImpl
+
+SSLSessionContext <|--- AbstractSessionContext
+ClientSessionContext ---|> AbstractSessionContext
+ServerSessionContext ---|> AbstractSessionContext
+AbstractSessionContext o--- SSL_CTX:sslCtxNativePointer
+AbstractSessionContext ...> NativeCrypto:SSL_CTX_new()
+OpenSSLContextImpl o--- ClientSessionContext:clientSessionContext
+OpenSSLContextImpl o--- ServerSessionContext:serverSessionContext
+NativeCrypto ...> SSL_METHOD:TLS_with_buffers_method()
+SSL_METHOD ...> SSL_CTX:SSL_CTX_new()
+info_callback <... SSL_CTX:info_callback
+
+ConscryptEngine ..> NativeSSL:newInstance()
+NativeSSL..> AbstractSessionContext:newSsl()
+AbstractSessionContext ..> NativeCrypto:SSL_new()
+NativeCrypto ..> SSL:new()
+NativeSSL o--- SSL:ssl
+
+SSL ..> cert_cb
+SSL ..> select_certificate_cb
+' SSL ..> info_callback
+
+SSL o--- CRYPTO_EX_DATA:ex_data
+CRYPTO_EX_DATA o--- void:sk
+SSLHandshakeCallbacks <... info_callback:onSSLStateChange()
+ConscryptEngine ---|> SSLHandshakeCallbacks
+
+CERT ---o SSL_CTX:cert
+cert_cb ---o CERT:cert_cb
+SSLHandshakeCallbacks <... cert_cb:onSSLStclientCertificateRequestedateChange()
+
+select_certificate_cb ---o SSL_CTX:select_certificate_cb
+SSLHandshakeCallbacks <... select_certificate_cb:serverCertificateRequested()
+NativeSSL ---o ConscryptEngine:ssl
+SSLParametersImpl ---o NativeSSL:parameters
+X509KeyManager ---o SSLParametersImpl:keyManager
+X509TrustManager ---o SSLParametersImpl:trustManager
+
+X509Certificate <... X509KeyManager:[]getCertificateChain()
+X509Certificate ...> PublicKey:getPublicKey()
+PrivateKey <... X509KeyManager:getPrivateKey()
+PublicKey ...> OpenSSLKey:1:fromPrivateKeyForTLSStackOnly()
+PrivateKey ...> OpenSSLKey:0:fromPrivateKeyForTLSStackOnly(0)
+OpenSSLKey ...> EVP_PKEY:getNativeRef()
+NativeCrypto2 <... EVP_PKEY:setLocalCertsAndPrivateKey()
+NativeCrypto2 ...> EVP_PKEY2:fromContextObject()
+
+OpenSSLKey ...> OpenSSLECPrivateKey:wrapJCAPrivateKeyForTLSStackOnly()
+OpenSSLECPrivateKey ...> NativeCrypto:getECPrivateKeyWrapper()
+PrivateKey ---o KeyExData:private_key
+CRYPTO_EX_DATA2 ---o EC_KEY:ex_data
+EVP_PKEY2 o--- EC_KEY:pkey
+KeyExData ---o CRYPTO_EX_DATA2:sk
+OpenSSLKey o--- EVP_PKEY:ctx
+
+EC_KEY o--- ECDSA_METHOD:ecdsa_meth
+ECDSA_METHOD ---o ENGINE:ecdsa_method
+
+SSL_HANDSHAKE o... SSL:ssl
+SSL o--- SSL3_STATE:s3
+SSL3_STATE o--- SSL_HANDSHAKE:hs
+
+CryptoUpcalls <.. ECDSA_METHOD:ecSignDigestWithPrivateKey()
+
+@enduml
