@@ -134,3 +134,27 @@ class SDNode<string opcode, SDTypeProfile typeprof,
 * sdclass - "SDNode"
 
 综上, `(add ZERO, AT...)` 这个DAG表示, 在加法操作时, 可以选择: ZERO, AT等寄存器
+
+## Cpu0InstrInfo.td
+### SDTypeProfile
+```
+class SDTypeProfile<int numresults, int numoperands,
+                    list<SDTypeConstraint> constraints> {
+  int NumResults = numresults;
+  int NumOperands = numoperands;
+  list<SDTypeConstraint> Constraints = constraints;
+}
+
+class SDTCisInt<int OpNum> : SDTypeConstraint<OpNum>;
+
+def SDT_Cpu0Ret : SDTypeProfile<0, 1, [SDTCisInt<0>]>;
+```
+
+因此:
+```
+def SDT_Cpu0Ret {	// SDTypeProfile
+  int NumResults = 0;
+  int NumOperands = 1;
+  list<SDTypeConstraint> Constraints = [SDTCisInt];
+}
+```
