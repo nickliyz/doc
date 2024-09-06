@@ -1,0 +1,52 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "llvm-tblgen",
+            "program": "${workspaceFolder}/build/bin/llvm-tblgen",
+            "args": [
+                "-I",
+                "llvm/include/",
+                "-I",
+                "llvm/lib/Target/Cpu0/",
+                "llvm/lib/Target/Cpu0/Cpu0Asm.td",
+                "-gen-asm-matcher",
+                "-o",
+                "Cpu0GenRegisterInfo.inc"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "llc-build",
+            "program": "${workspaceFolder}/build/bin/llc",
+            "args": [
+                "add.ll",
+                "-march=cpu0",
+                "-o",
+                "add.s"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "llc-view-legalize-dags",
+            "program": "${workspaceFolder}/build/bin/llc",
+            "args": [
+                "-relocation-model=pic",
+                "-march=cpu0",
+                "add.ll",
+                "-o",
+                "add.s",
+                "-view-dag-combine1-dags"
+            ],
+        }
+    ]
+}
