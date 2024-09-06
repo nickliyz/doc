@@ -8,16 +8,29 @@ git clone -b release/18.x --depth=1 https://github.com/llvm/llvm-project.git
 cd llvm-project
 cmake -S llvm -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;mlir;" \
-    -DDLLVM_BUILD_EXAMPLES=ON \
+    -DLLVM_ENABLE_PROJECTS="clang;mlir;lldb" \
     -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
-    -DLLVM_TARGETS_TO_BUILD="Native;AMDGPU" \
+    -DLLVM_TARGETS_TO_BUILD="Native;ARM;Mips" \
+    -DLLVM_PARALLEL_LINK_JOBS=1 \
+    -DLLVM_PARALLEL_COMPILE_JOBS=16 \
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DLLDB_TEST_COMPILER=/usr/local/bin/clang
+cmake --build build
+cmake --install build
+```
+
+## only build lldb
+```
+cmake -S llvm -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_PROJECTS="clang;lldb" \
+    -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
+    -DLLVM_TARGETS_TO_BUILD="Native" \
     -DLLVM_PARALLEL_LINK_JOBS=2 \
     -DLLVM_PARALLEL_COMPILE_JOBS=24 \
     -DLLVM_PARALLEL_TABLEGEN_JOBS=8 \
-    -DLLVM_ENABLE_ASSERTIONS=ON
-cmake --build build
-cmake --install build
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DLLDB_TEST_COMPILER=/usr/local/bin/clang
 ```
 
 ## for macOS
