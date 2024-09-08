@@ -24,32 +24,52 @@ skinparam {
 ' -view-sunit-dags
 ' }
 
-package module_pass {
-    class MPPassManager
-    ' class Pass
-    class PMDataManager
+' -gen-register-info
+' -gen-instr-info
+' -gen-subtarget
+' -gen-pseudo-lowering
+' -gen-dag-isel
+' -gen-callingconv
+' -gen-emitter
+' -gen-emitter
+' -gen-asm-writer
+' -gen-disassembler
+
+package pass_manager {
+    class PassManager
+    class PassManagerBase
+    class PassManagerImpl
+    ' class TargetPassConfig
+    package module_pass_manager {
+        class MPPassManager
+        ' class Pass
+        class PMDataManager
+        package module_pass {
+            class "PMDataManager" as PMDataManager2
+            class Module
+            class FPPassManager
+            class "Pass" as Pass2
+            class ModulePass
+        }
+    }
 }
 
 package selection_dag {
     class SelectionDAGISel
     class Cpu0DAGToDAGISel
     class Cpu0SEDAGToDAGISel
-}
-
-package module {
-    class "PMDataManager" as PMDataManager2
-    class Module
-    class FPPassManager
-    class "Pass" as Pass2
-    class ModulePass
+    class SelectionDAG
+    class SDNode
+    class SDValue
 }
 
 package machine_function_pass {
     class "Pass" as Pass3
     class FunctionPass
     class MachineFunctionPass
-    class PEI
 }
+
+' class PEI
 
 ' package Cpu0 {
 package asm_printer {
@@ -57,23 +77,24 @@ package asm_printer {
     class Cpu0AsmPrinter
 }
 
-package register_info {
+package subtarget_info {
+' package register_info {
     class MCRegisterInfo
     class TargetRegisterInfo
     class Cpu0GenRegisterInfo
     class Cpu0RegisterInfo
     class Cpu0SERegisterInfo
-}
+' }
 
-package instr_info {
+' package instr_info {
     class MCInstrInfo
     class TargetInstrInfo
     class Cpu0InstrInfo
     class Cpu0GenInstrInfo
     class Cpu0SEInstrInfo
-}
+' }
 
-package subtarget_info {
+' package subtarget_info {
     class MCSubtargetInfo
     class TargetSubtargetInfo
     class Cpu0GenSubtargetInfo
@@ -88,27 +109,66 @@ package target_machine {
 }
 ' }
 
-package streamer {
-    class MCStreamer
-    class MCAsmStreamer
+package target_lowering {
+    class TargetLoweringBase
+    class TargetLowering
+    class Cpu0TargetLowering
+    class Cpu0SETargetLowering
+    ' class Cpu0ABIInfo
 }
 
-package inst_printer {
-    class MCInstPrinter
-    class Cpu0InstPrinter
+
+package machine {
+    class MachineFunction
+    class MachineBasicBlock
+    class MachineInstr
+    class MachineOperand
+    class offset
+    class reg_no
+    class symbol_name
 }
+
+package MC {
+    class MCInst
+    class MCContext
+    class MCSymbol
+    class MCSymbolRefExpr
+    class MCBinaryExpr
+    class MCConstantExpr
+    class MCOperand
+    package streamer {
+        class MCStreamer
+        class MCAsmStreamer
+    }
+    package inst_printer {
+        class MCInstPrinter
+        class Cpu0InstPrinter
+    }
+    package target_streamer {
+        class MCTargetStreamer
+        class Cpu0TargetStreamer
+    }
+}
+
+' class "Value" as Value2
 
 MachineFunction o-- TargetSubtargetInfo:STI
-MCRegisterInfo <|-- TargetRegisterInfo
-TargetRegisterInfo <|-- Cpu0GenRegisterInfo
-Cpu0GenRegisterInfo <|-- Cpu0RegisterInfo
-Cpu0RegisterInfo <|-- Cpu0SERegisterInfo
-Cpu0SERegisterInfo --o Cpu0SEInstrInfo:RI
-Cpu0InstrInfo --|> Cpu0GenInstrInfo
-Cpu0GenInstrInfo --|> TargetInstrInfo
-TargetInstrInfo --|> MCInstrInfo
+TargetRegisterInfo --|> MCRegisterInfo
+Cpu0GenRegisterInfo --|> TargetRegisterInfo
+Cpu0RegisterInfo --|> Cpu0GenRegisterInfo
+Cpu0SERegisterInfo --|> Cpu0RegisterInfo
+Cpu0SEInstrInfo o-- Cpu0SERegisterInfo:RI
+Cpu0GenInstrInfo <|-- Cpu0InstrInfo
+TargetInstrInfo <|-- Cpu0GenInstrInfo
+MCInstrInfo <|-- TargetInstrInfo
 
+TargetMachine --o TargetLoweringBase:TM
+TargetLoweringBase <|-- TargetLowering
 SelectionDAGISel o-- TargetLowering:TLI
+TargetLowering <|-- Cpu0TargetLowering
+Cpu0TargetLowering <|-- Cpu0SETargetLowering
+Cpu0TargetLowering o-- Cpu0Subtarget:Subtarget
+' Cpu0TargetLowering o-- Cpu0ABIInfo:ABI
 SelectionDAGISel o-- MachineFunction:MF
 
 PMDataManager <|-- MPPassManager
@@ -124,24 +184,24 @@ PMDataManager2 o--Pass3:PassVector[]
 ' Function ..> FPPassManager:runOnFunction()
 FPPassManager <.. Module:runOnModule()
 Module o-- Function:FunctionList[]
-Function ..> FunctionPass:runOnFunction()
+' Function ..> FunctionPass:runOnFunction()
 
 PassManagerImpl o-- PMDataManager:PassManagers[]
 PassManager o-- PassManagerImpl:PM
 
-MachineFunctionPass <|-- PEI
-PEI ..> TargetRegisterInfo:eliminateFrameIndex()
-PEI ..> TargetRegisterInfo:requiresRegisterScavenging()
-MachineFunctionPass <|-- AsmPrinter
+' MachineFunctionPass <|--- PEI
+' PEI ..> TargetRegisterInfo:eliminateFrameIndex()
+' PEI ..> TargetRegisterInfo:requiresRegisterScavenging()
+MachineFunctionPass <|--- AsmPrinter
 Cpu0AsmPrinter --|> AsmPrinter
 
-FPPassManager ..> Cpu0SEDAGToDAGISel:runOnMachineFunction()
-FPPassManager ..> AsmPrinter:runOnMachineFunction()
-FPPassManager ..> PEI:runOnMachineFunction()
+' FPPassManager ..> Cpu0SEDAGToDAGISel:runOnMachineFunction()
+' FPPassManager ..> AsmPrinter:runOnMachineFunction()
+' FPPassManager ..> PEI:runOnMachineFunction()
 
 Pass3 <|-- FunctionPass
-FunctionPass <|-- MachineFunctionPass
-SelectionDAGISel --|> MachineFunctionPass
+FunctionPass <|--- MachineFunctionPass
+SelectionDAGISel ---|> MachineFunctionPass
 Cpu0DAGToDAGISel --|> SelectionDAGISel
 Cpu0SEDAGToDAGISel --|> Cpu0DAGToDAGISel
 
@@ -156,17 +216,77 @@ MCSubtargetInfo <|-- TargetSubtargetInfo
 TargetSubtargetInfo <|-- Cpu0GenSubtargetInfo
 Cpu0GenSubtargetInfo <|-- Cpu0Subtarget
 Cpu0TargetMachine o-- Cpu0Subtarget:DefaultSubtarget
-Cpu0SEInstrInfo --|> Cpu0InstrInfo
+Cpu0InstrInfo <|-- Cpu0SEInstrInfo
 Cpu0Subtarget o-- Cpu0InstrInfo:InstrInfo
 
 SelectionDAGISel o-- BasicBlock:LLVMBB
+Function o-- BasicBlock:BasicBlocks[]
+BasicBlock --o MachineBasicBlock:BB
 BasicBlock o-- Instruction:InstList[]
 SelectionDAGISel o-- SelectionDAG:CurDAG
+
+SelectionDAG o-- SDValue:Root
+SDValue o-- SDNode:Node
+' SDNode o-- OpCode:NodeType
+' SDNode o-- EVT:ValueList[]
+SelectionDAG o-- TargetInstrInfo:TRI
+' SelectionDAG o-- MachineRegisterInfo:RegInfo
+Function --o MachineFunction:F
 
 AsmPrinter o-- MCStreamer:OutStreamer
 MCStreamer <|-- MCAsmStreamer
 MCStreamer o-- MCTargetStreamer:TargetStreamer
 MCInstPrinter <|-- Cpu0InstPrinter
 MCAsmStreamer o-- MCInstPrinter:InstPrinter
+
+Cpu0AsmPrinter o-- Cpu0MCInstLower:MCInstLowering
+
+' Instruction ..[#Red].> MachineInstr:<font color=red>?????</font>
+MachineInstr ..[#Blue].> Cpu0MCInstLower:<font color=blue>INPUT</font>
+Cpu0MCInstLower ..[#Blue].> MCInst:<font color=blue>OUTPUT</font>
+
+AsmPrinter o-- MachineFunction:MF
+MachineFunction o-- MachineBasicBlock:BasicBlocks[]
+MachineBasicBlock o-- MachineInstr:Insts[]
+MachineFunction ...> MachineInstr:CreateMachineInstr
+' Instruction ..[#Red].> MachineBasicBlock:<font color=red>INSERT(key)</font>
+' MachineInstr ..[#Red].> MachineBasicBlock:<font color=red>INSERT(value)</font>
+Instruction ..[#Red].> MachineInstr:<font color=red>?????</font>
+
+' MCContext ..> MCConstantExpr:NEW
+MCSymbol --o MCSymbolRefExpr:Symbol
+MCSymbolRefExpr --o MCBinaryExpr:LHS
+MCConstantExpr --o MCBinaryExpr:RHS
+MCBinaryExpr --o MCOperand:ExprVal
+MachineInstr o-- MachineOperand:Operands[]
+MachineOperand ..[#Blue].>MCOperand:<font color=blue>LowerOperand()</font>
+MachineOperand o-- reg_no:SmallContents.RegNo
+reg_no --o MCOperand:RegVal
+' MachineOperand o-- MachineOperandType:OpKind
+MachineOperand o-- symbol_name:...SymbolName
+symbol_name ..> MCContext
+AsmPrinter o-- MCContext
+MCContext ..> MCSymbol:getOrCreateSymbol()
+MachineOperand o-- offset:...OffsetHi
+offset --o MCConstantExpr:Value
+MCOperand --o MCInst:Operands[8]
+
+MCInst ..> MCStreamer:EmitInstruction()
+
+MCAsmStreamer o-- MCTargetStreamer:TargetStreamer
+MCTargetStreamer <|-- Cpu0TargetStreamer
+MCInstPrinter <|-- Cpu0InstPrinter
+MCAsmStreamer o-- MCInstPrinter:InstPrinter
+MCTargetStreamer ..> MCInstPrinter:printInst()
+
+PassManagerBase <|-- PassManager
+' PassManagerBase o-- TargetPassConfig
+
+Value --o Instruction:Op<0>
+' Instruction o-- Value2:Op<1>
+
+ConstantValue --|> Value
+SDNode <|-- ConstantSDNode
+ConstantSDNode o-- ConstantValue:Value
 
 @enduml
