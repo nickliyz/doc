@@ -421,6 +421,11 @@ PS: 打开内核的`CONFIG_DEBUG_INFO_BTF`需要同时打开这个选项, 否则
 重新编译后再次执行:
 ```
 ./xdpsock -i eth0 -q 0 -r
+...
+ sock0@eth0:0 rxdrop xdp-drv 
+                   pps            pkts           1.00          
+rx                 0              0             
+tx                 0              0
 ```
 
 ## 自己犯的一个脑残的错误
@@ -438,10 +443,16 @@ libbpf: elf: skipping unrecognized data section(7) xdp_metadata
 libxdp: Existing program is not using a dispatcher, can't replace; unload first
 xdpsock.c:xsk_configure_socket:1068: errno: 16/"Device or resource busy"
 ```
+这是因为 ip link 已经attach到xdp程序了, 再通过xdpsock加载就无法加载.
 
-重新编译 buildroot. -->
-
-
+## 遗留问题
+无法加载 xdp_dispatcher
+```
+libbpf: prog 'xdp_dispatcher': failed to load: -22
+libbpf: failed to load object 'xdp-dispatcher.o'
+libxdp: Failed to load dispatcher: Invalid argument
+libxdp: Falling back to loading single prog without dispatcher
+```
 
 # 关于clangd配置
 生成内核的clangd信息`compile_commands.json`:
