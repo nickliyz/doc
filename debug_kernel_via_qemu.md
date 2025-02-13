@@ -1,3 +1,52 @@
+内核配置`board/qemu/x86/linux.config`添加:
+```
+CONFIG_DEBUG_KERNEL=y
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+CONFIG_RANDOMIZE_BASE=no
+CONFIG_KALLSYMS_ALL=y
+CONFIG_KALLSYMS=y
+
+CONFIG_GDB_SCRIPTS=y
+CONFIG_IP_PNP=y
+CONFIG_IP_PNP_DHCP=y
+CONFIG_KERNFS=y
+CONFIG_NFS_FS=y
+CONFIG_NFS_V2=y
+CONFIG_NFS_V3=y
+CONFIG_NFS_V4=y
+CONFIG_ROOT_NFS=y
+CONFIG_NFS_USE_KERNEL_DNS=y
+
+CONFIG_FTRACE=y
+CONFIG_KPROBES=y
+CONFIG_KPROBE_EVENTS=y
+CONFIG_BPF_EVENTS=y
+CONFIG_DEBUG_FS=y
+CONFIG_DEBUG_FS_ALLOW_ALL=y
+
+
+CONFIG_BPF_SYSCALL=y
+CONFIG_NET_CLS_BPF=y
+CONFIG_NET_CLS_ACT=y
+CONFIG_NET_SCH_INGRESS=y
+CONFIG_NET_CLS_ACT=y
+CONFIG_CGROUP_BPF=y
+CONFIG_LWTUNNEL_BPF=y
+CONFIG_XDP_SOCKETS=y
+CONFIG_XDP_SOCKETS_DIAG=y
+CONFIG_DEBUG_INFO_BTF=y
+```
+
+buildroot配置`configs/qemu_x86_defconfig`中添加:
+```
+BR2_TARGET_ENABLE_ROOT_LOGIN=n
+BR2_TARGET_GENERIC_GETTY=n
+BR2_PACKAGE_LIBMNL=y
+BR2_PACKAGE_IPROUTE2=y
+BR2_PACKAGE_LIBBPF=y
+BR2_LINUX_KERNEL_NEEDS_HOST_PAHOLE=y
+```
+
 # 调试步骤
 * 下载 buildroot-2024.02.10 代码
 
@@ -18,7 +67,7 @@ make qemu_x86_defconfig
 
 不要用`output/images/start-qemu.sh`, 要用下面的命令:
 ```
-output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/vda console=tty1 console=ttyS0"  -net nic,model=virtio -net user -nographic -s -S
+output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/vda console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
 ```
 
 vscode 配置(`output/build/linux-6.1.44/launch.json`):
@@ -60,7 +109,7 @@ sudo systemctl start nfs-kernel-server.service
 
 `sudo vim /etc/exports`, 然后添加:
 ```
-/home/lixiang/github/buildroot-2024.02.10/output/target/ *(rw,async,no_subtree_check,no_root_squash,insecure)
+/home/liyang/github/buildroot-2024.02.10/output/target/ *(rw,async,no_subtree_check,no_root_squash,insecure)
 ```
 PS: insecure 要加上
 
@@ -68,7 +117,7 @@ PS: insecure 要加上
 ```
 mkdir mnt_test
 ifconfig # 查看网卡地址
-sudo mount -t nfs 10.248.24.143:/home/lixiang/github/buildroot-2024.02.10/output/target/ mnt_test/
+sudo mount -t nfs 10.248.24.143:/home/liyang/github/buildroot-2024.02.10/output/target/ mnt_test/
 ls mnt_test/ # 检查挂在是否正确
 sudo umount mnt_test
 ```
@@ -91,7 +140,7 @@ PS: 这是为了免登陆
 
 qemu启动命令改成:
 ```
-output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/nfs rw nfsroot=10.248.24.143:/home/lixiang/github/buildroot-2024.02.10/output/target,vers=4,tcp ip=dhcp console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
+output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/nfs rw nfsroot=10.0.2.2:/home/liyang/github/buildroot-2024.02.10/output/target,vers=4,tcp ip=dhcp console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
 ```
 
 # 如何编写并测试内核模块
@@ -124,8 +173,8 @@ MODULE_VERSION("1.0");
 
 模块`Makefile`:
 ```
-CROSS=/home/lixiang/github/buildroot-2024.02.10/output/host/bin/i686-buildroot-linux-gnu-
-KERNEL_DIR=/home/lixiang/github/buildroot-2024.02.10/output/build/linux-6.1.44
+CROSS=/home/liyang/github/buildroot-2024.02.10/output/host/bin/i686-buildroot-linux-gnu-
+KERNEL_DIR=/home/liyang/github/buildroot-2024.02.10/output/build/linux-6.1.44
 CUR_DIR = $(shell pwd)
 
 all:
@@ -278,6 +327,122 @@ detach:
 bpftool net detach xdp dev eth0
 ```
 
+
+# XDP example
+
+下载XDP example 代码: https://github.com/xdp-project/bpf-examples
+
+增加`package/bpf-examples/Config.in`:
+```
+config BR2_PACKAGE_BPF_EXAMPLES
+        bool "bpf-example"
+        select BR2_PACKAGE_LIBBPF
+        select BR2_PACKAGE_LIBCAP
+        help
+                XDP bpf-example package
+```
+
+增加: `package/bpf-examples/bpf-examples.mk`:
+```
+BPF_EXAMPLES_VERSION = main
+BPF_EXAMPLES_SITE = https://github.com/xdp-project/bpf-examples
+BPF_EXAMPLES_SITE_METHOD = git
+BPF_EXAMPLES_GIT_SUBMODULES = YES
+BPF_EXAMPLES_LICENSE = BSD-2-Clause
+
+ifeq ($(BR2_PACKAGE_LIBCAP),y)
+BPF_EXAMPLES_DEPENDENCIES += libcap
+endif
+
+define BPF_EXAMPLES_BUILD_CMDS
+	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)
+endef
+
+define BPF_EXAMPLES_INSTALL_TARGET_CMDS
+	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) \
+		-C $(@D) install DESTDIR="$(TARGET_DIR)" prefix=/root
+endef
+
+$(eval $(generic-package))
+```
+增加 bpf-example 到buildroot编译, 该部分操作略去.
+
+拷贝编译产物到 target/root:
+```
+cp output/build/bpf-examples-main/AF_XDP-example/xdpsock_kern.o output/build/bpf-examples-main/AF_XDP-example/xdpsock output/target/root/
+```
+
+开启buildroot选项:
+* **BR2_PACKAGE_LIBMNL=y**
+然后编译buildroot, 或者重新制作文件系统: `make rootfs-ext2`
+
+qemu启动不要使用nfs方式, 要使用:
+```
+output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/vda console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
+```
+
+关于加载xdp_sock遇到的错误:
+```
+/root # ip link set dev eth0 xdp obj xdpsock_kern.o sec xdp_sock
+ip: either "dev" is duplicate, or "xdp" is garbage
+```
+
+可能是ip工具版本太低了, 修改buildroot配置:
+* **BR2_PACKAGE_IPROUTE2=y**
+
+重新编译:
+```
+sudo chown -R $USER output/
+make -j
+```
+
+重新运行:
+```
+/root # ip link set dev eth0 xdp obj xdpsock_kern.o sec xdp_sock
+libbpf: failed to find valid kernel BTF
+libbpf: Error loading vmlinux BTF: -3
+libbpf: failed to load object 'xdpsock_kern.o'
+```
+
+这是因为内核没有打开 xdp_socket 选项, 
+
+先启用 buildroot 选项:
+* **BR2_LINUX_KERNEL_NEEDS_HOST_PAHOLE=y**
+PS: 打开内核的`CONFIG_DEBUG_INFO_BTF`需要同时打开这个选项, 否则会报错.
+
+再打开内核配置:
+* **XDP_SOCKETS=y**
+* **XDP_SOCKETS_DIAG=y**
+* **CONFIG_DEBUG_INFO_BTF=y**
+以下两个好像无法启用:
+* **PAHOLE_HAS_SPLIT_BTF=y**
+* **CONFIG_DEBUG_INFO_BTF_MODULES=y**
+
+重新编译后再次执行:
+```
+./xdpsock -i eth0 -q 0 -r
+```
+
+## 自己犯的一个脑残的错误
+如果先执行
+```
+ip link set dev eth0 xdp obj xdpsock_kern.o sec xdp_sock
+virtio_net virtio0 eth0: XDP request 2 queues but max is 1. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.
+```
+再实行:
+```
+./xdpsock -i eth0 -q 0 -r
+libbpf: elf: skipping unrecognized data section(8) .xdp_run_config
+libbpf: elf: skipping unrecognized data section(9) xdp_metadata
+libbpf: elf: skipping unrecognized data section(7) xdp_metadata
+libxdp: Existing program is not using a dispatcher, can't replace; unload first
+xdpsock.c:xsk_configure_socket:1068: errno: 16/"Device or resource busy"
+```
+
+重新编译 buildroot. -->
+
+
+
 # 关于clangd配置
 生成内核的clangd信息`compile_commands.json`:
 ```
@@ -287,3 +452,10 @@ cd output/build/linux-6.1.44
 即可生成`output/build/linux-6.1.44/compile_commands.json`, 然后在`output/build/linux-6.1.44/`下启动vscode就可以了.
 
 * **注意:** 如果使用clangd, 需要禁用 cpp intelligence 索引, 并且需要clangd插件.
+
+# 彻底清空 output/target 重新编译
+```
+rm -rf output/target
+find output/ -name ".stamp_target_installed" -delete
+rm -f output/build/host-gcc-final-*/.stamp_host_installed
+```
