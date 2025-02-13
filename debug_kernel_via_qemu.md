@@ -18,6 +18,7 @@ CONFIG_ROOT_NFS=y
 CONFIG_NFS_USE_KERNEL_DNS=y
 
 CONFIG_FTRACE=y
+CONFIG_FTRACE_SYSCALLS=y
 CONFIG_KPROBES=y
 CONFIG_KPROBE_EVENTS=y
 CONFIG_BPF_EVENTS=y
@@ -26,6 +27,8 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 
 
 CONFIG_BPF_SYSCALL=y
+CONFIG_BPF_JIT_ALWAYS_ON=y
+CONFIG_DEBUG_INFO_BTF=y
 CONFIG_NET_CLS_BPF=y
 CONFIG_NET_CLS_ACT=y
 CONFIG_NET_SCH_INGRESS=y
@@ -39,12 +42,14 @@ CONFIG_DEBUG_INFO_BTF=y
 
 buildroot配置`configs/qemu_x86_defconfig`中添加:
 ```
+BR2_x86_64=y
 BR2_TARGET_ENABLE_ROOT_LOGIN=n
 BR2_TARGET_GENERIC_GETTY=n
 BR2_PACKAGE_LIBMNL=y
 BR2_PACKAGE_IPROUTE2=y
 BR2_PACKAGE_LIBBPF=y
 BR2_LINUX_KERNEL_NEEDS_HOST_PAHOLE=y
+BR2_PACKAGE_BPFTOOL=y
 ```
 
 # 调试步骤
@@ -140,7 +145,7 @@ PS: 这是为了免登陆
 
 qemu启动命令改成:
 ```
-output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/nfs rw nfsroot=10.0.2.2:/home/liyang/github/buildroot-2024.02.10/output/target,vers=4,tcp ip=dhcp console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
+output/host/bin/qemu-system-x86_64 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/nfs rw nfsroot=10.0.2.2:/home/liyang/github/buildroot-2024.02.10/output/target,vers=4,tcp ip=dhcp console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
 ```
 
 # 如何编写并测试内核模块
@@ -378,7 +383,7 @@ cp output/build/bpf-examples-main/AF_XDP-example/xdpsock_kern.o output/build/bpf
 
 qemu启动不要使用nfs方式, 要使用:
 ```
-output/build/host-qemu-8.1.1/build/qemu-system-i386 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/vda console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
+output/host/bin/qemu-system-x86_64 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/vda console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
 ```
 
 关于加载xdp_sock遇到的错误:
@@ -420,12 +425,17 @@ PS: 打开内核的`CONFIG_DEBUG_INFO_BTF`需要同时打开这个选项, 否则
 
 重新编译后再次执行:
 ```
-./xdpsock -i eth0 -q 0 -r
-...
- sock0@eth0:0 rxdrop xdp-drv 
-                   pps            pkts           1.00          
-rx                 0              0             
-tx                 0              0
+cd /root; ./xdpsock -i eth0 -q 0 -r &
+```
+
+常用命令
+```
+bpftool prog show
+```
+
+停止运行:
+```
+killall xdpsock
 ```
 
 ## 自己犯的一个脑残的错误
@@ -443,16 +453,25 @@ libbpf: elf: skipping unrecognized data section(7) xdp_metadata
 libxdp: Existing program is not using a dispatcher, can't replace; unload first
 xdpsock.c:xsk_configure_socket:1068: errno: 16/"Device or resource busy"
 ```
-这是因为 ip link 已经attach到xdp程序了, 再通过xdpsock加载就无法加载.
 
-## 遗留问题
-无法加载 xdp_dispatcher
+重新编译 buildroot. -->
+
+# 关于 buildroot 增加 gdb/gdbserver 支持
+## 编译配置相关
+增加一下buildroot配置:
+* **BR2_TOOLCHAIN_BUILDROOT_CXX=y**
+* **BR2_PACKAGE_GDB=y**
+* **BR2_PACKAGE_GDB_SERVER=y**
+* **BR2_PACKAGE_GDB_DEBUGGER=y**
+
+重新编译 buildroot, 遇到报错:
 ```
-libbpf: prog 'xdp_dispatcher': failed to load: -22
-libbpf: failed to load object 'xdp-dispatcher.o'
-libxdp: Failed to load dispatcher: Invalid argument
-libxdp: Falling back to loading single prog without dispatcher
+configure: error: C++ compiler not available, see config.log for details
+make[1]: *** [package/pkg-generic.mk:273: /home/liyang/github/buildroot-2024.02.10/output/build/gmp-6.3.0/.stamp_configured] Error 1
+make: *** [Makefile:82: _all] Error 2
 ```
+
+清理 `output/build/gcc*` / `output/build/host-*gcc*`的包, 重新编译.
 
 # 关于clangd配置
 生成内核的clangd信息`compile_commands.json`:
@@ -469,4 +488,211 @@ cd output/build/linux-6.1.44
 rm -rf output/target
 find output/ -name ".stamp_target_installed" -delete
 rm -f output/build/host-gcc-final-*/.stamp_host_installed
+```
+
+## bpftool运行报错的问题
+如果遇到报错:
+```
+bpftool: error while loading shared libraries: libsframe.so.0: cannot open shared object file: No such file or directory
+```
+
+可手动执行:
+```
+cp output/build/binutils-2.40/libsframe/.libs/libsframe.so.0 output/target/usr/lib
+make rootfs-ext2
+```
+重新打包 rootfs 后重启虚拟机.
+
+# 添加 bcc 到 buildroot
+参考资料:
+* [BCC integration into buildroot](https://linuxembedded.fr/2019/05/bcc-integration-into-buildroot)
+* [patches](https://patchwork.ozlabs.org/project/buildroot/patch/1557130548-6267-8-git-send-email-jugurtha.belkalem@smile.fr/)
+
+增加python3 支持:
+* **BR2_PACKAGE_PYTHON3=y**
+
+
+准备文件 `package/bcc/Config.in`:
+```
+config BR2_PACKAGE_BCC
+	bool "bcc"
+	depends on BR2_PACKAGE_LLVM_ARCH_SUPPORTS
+	# depends on BR2_PACKAGE_LUAJIT_ARCH_SUPPORTS
+	depends on BR2_TOOLCHAIN_USES_GLIBC # hardcode GNU tuple (x86_64-unknown-linux-gnu)
+	depends on BR2_LINUX_KERNEL # needs kernel sources on the target
+        depends on BR2_HOST_GCC_AT_LEAST_4_9
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_8 # clang
+	depends on BR2_TOOLCHAIN_HAS_THREADS # clang
+	depends on BR2_INSTALL_LIBSTDCPP # clang
+	depends on !BR2_TOOLCHAIN_HAS_GCC_BUG_64735 # clang
+	depends on !BR2_STATIC_LIBS # clang, luajit
+	depends on BR2_USE_WCHAR # clang
+	select BR2_PACKAGE_CLANG
+	select BR2_PACKAGE_ELFUTILS
+	select BR2_PACKAGE_FLEX # needs FlexLexer.h
+	select BR2_PACKAGE_LLVM_BPF
+	# select BR2_PACKAGE_LUAJIT
+	select BR2_PACKAGE_PYTHON_BCC # wrappers for BPF
+	help
+	  BPF Compiler Collection (BCC)
+
+comment "bcc needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+comment "bcc needs a glibc toolchain w/ wchar, threads, C++, gcc >= 4.8, host gcc >= 4.8, dynamic library"
+	depends on BR2_PACKAGE_LLVM_ARCH_SUPPORTS
+	depends on BR2_LINUX_KERNEL
+	depends on !BR2_TOOLCHAIN_USES_GLIBC || !BR2_TOOLCHAIN_HAS_THREADS \
+		|| !BR2_INSTALL_LIBSTDCPP || !BR2_HOST_GCC_AT_LEAST_4_9 \
+		|| !BR2_TOOLCHAIN_GCC_AT_LEAST_4_8 || BR2_STATIC_LIBS \
+                || !BR2_USE_WCHAR
+```
+
+准备 `package/bcc/bcc.mk`:
+```
+################################################################################
+#
+# bcc
+#
+################################################################################
+
+BCC_VERSION = v0.33.0
+BCC_SITE = $(call github,iovisor,bcc,$(BCC_VERSION))
+BPFTOOL_SITE_METHOD = git
+BCC_LICENSE = Apache-2.0
+BCC_LICENSE_FILES = LICENSE.txt
+BCC_INSTALL_STAGING = YES
+
+BCC_DEPENDENCIES = host-bison host-flex clang elfutils flex llvm libbpf
+
+# ENABLE_LLVM_SHARED=ON to use llvm.so.
+# Force REVISION otherwise bcc will use git describe to generate a version number.
+BCC_CONF_OPTS = -DENABLE_LLVM_SHARED=ON \
+	-DREVISION=$(BCC_VERSION) \
+	-DENABLE_CLANG_JIT=ON \
+	-DCMAKE_USE_LIBBPF_PACKAGE=ON \
+	-DENABLE_MAN=OFF
+
+$(eval $(cmake-package))
+```
+
+然后 `package/Config.in`添加:
+```
+source "package/bcc/Config.in"
+```
+
+编译遇到错误:
+```
+Allocating group tables: done                            
+Writing inode tables: done                            
+Copying files into the device: __populate_fs: Could not allocate block in ext2 filesystem while writing file "libLLVM-15.so"
+mkfs.ext2: Could not allocate block in ext2 filesystem while populating file system
+*** Maybe you need to increase the filesystem size (BR2_TARGET_ROOTFS_EXT2_SIZE)
+make[1]: *** [fs/ext2/ext2.mk:66: /home/liyang/github/buildroot-2024.02.10/output/images/rootfs.ext2] Error 1
+make: *** [Makefile:82: _all] Error 2
+(failed reverse-i-search)`suo': code ^Cpport/dependencies/dependencies.sh
+```
+
+修改文件系统大小为 256MB, 选项:
+* **BR2_TARGET_ROOTFS_EXT2_SIZE=256M**
+
+# 添加 bpftrace 到 buildroot
+遇到错误:
+```
+CMake Error at /home/liyang/.local/lib/python3.8/site-packages/cmake/data/share/cmake-3.30/Modules/FindPackageHandleStandardArgs.cmake:233 (message):
+  Please install the libcereal development package (missing:
+  LIBCEREAL_INCLUDE_DIRS)
+Call Stack (most recent call first):
+  /home/liyang/.local/lib/python3.8/site-packages/cmake/data/share/cmake-3.30/Modules/FindPackageHandleStandardArgs.cmake:603 (_FPHSA_FAILURE_MESSAGE)
+  cmake/FindLibCereal.cmake:14 (FIND_PACKAGE_HANDLE_STANDARD_ARGS)
+  CMakeLists.txt:98 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+make[1]: *** [package/pkg-generic.mk:273: /home/liyang/github/buildroot-2024.02.10/output/build/bpftrace-v0.22.1/.stamp_configured] Error 1
+make: *** [Makefile:82: _all] Error 2
+```
+
+buildroot 添加 `cereal` 包的编译即可. 
+
+遇到错误:
+```
+-- Using SYSTEM_INCLUDE_PATHS=auto
+CMake Error at src/arch/CMakeLists.txt:18 (message):
+  Unsupported architecture: i686
+
+
+-- Configuring incomplete, errors occurred!
+make[1]: *** [package/pkg-generic.mk:273: /home/liyang/github/buildroot-2024.02.10/output/build/bpftrace-v0.22.1/.stamp_configured] Error 1
+make: *** [Makefile:82: _all] Error 2
+```
+
+把 i686 当 x86_64 处理先
+
+## 运行错误:
+`librequired_resources.so` 找不到:
+```
+bpftrace: error while loading shared libraries: librequired_resources.so: cannot open shared object file: No such file or directory
+```
+
+解决办法:
+```
+cp output/build/bpftrace-v0.22.1/src/librequired_resources.so output/target/usr/lib
+```
+重新打包.
+
+错误:
+```
+WARNING: Could not read symbols from /sys/kernel/tracing/available_events: No such file or directory
+bpftrace[109]: segfault at 0 ip b1362290 sp bf820ed0 error 4 in libstdc++.so.6.0.30[b12de000+116000] likely on CPU 0 (core 0, socket 0)
+Code: 5d c3 66 90 66 90 66 90 66 90 55 89 e5 57 e8 ba b3 f8 ff 81 c7 7b dd 11 00 56 53 83 ec 1c 8b 45 10 8b 75 0c 8b 4d 08 89 45 e4 <8b> 06 c6 01 00 8b 50
+Segmentation fault
+```
+
+需要手动挂在下debugfs
+```
+~ # mount -t debugfs none /sys/kernel/debug
+~ # ls /sys/kernel/debug/tracing/
+README                 kprobe_events          trace
+... ...
+```
+即可.
+
+
+错误:
+```
+# bpftrace -e 'tracepoint:syscalls:sys_enter_open { printf("%s %s\n", comm, str(args->filename)); }'
+WARNING: Could not read symbols from /sys/kernel/tracing/available_events: No such file or directory
+bpftrace[109]: segfault at 0 ip b1362290 sp bf820ed0 error 4 in libstdc++.so.6.0.30[b12de000+116000] likely on CPU 0 (core 0, socket 0)
+Code: 5d c3 66 90 66 90 66 90 66 90 55 89 e5 57 e8 ba b3 f8 ff 81 c7 7b dd 11 00 56 53 83 ec 1c 8b 45 10 8b 75 0c 8b 4d 08 89 45 e4 <8b> 06 c6 01 00 8b 50
+Segmentation fault
+```
+内核开启选项: 
+* **CONFIG_FTRACE_SYSCALLS=y**
+
+重新编译内核: 
+```
+sudo chown -R $USER output/target/; rm -r /home/liyang/github/buildroot-2024.02.10/output/target/lib/modules/6.1.44/source; make -j4
+```
+
+重新运行
+```
+mount -t debugfs none /sys/kernel/debug
+mkdir -p /lib/modules/6.1.44/source
+mount -t nfs -o nolock 10.248.24.143:/home/liyang/github/buildroot-2024.02.10/output/build/linux-6.1.44 /lib/modules/6.1.44/source
+
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat* { printf("sys_enter_openat events: %s %s\n", comm, str(args->filename)); }' &
+
+tail -f /sys/kernel/debug/tracing/trace_pipe &
+
+killall bpftrace
+
+```
+
+
+启动 nfs
+```
+sudo systemctl restart nfs-kernel-server.service
+
+output/host/bin/qemu-system-x86_64 -M pc -kernel output/images/bzImage -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "rootwait root=/dev/nfs rw nfsroot=10.248.24.143:/home/liyang/github/buildroot-2024.02.10/output/target,vers=4,tcp ip=dhcp console=tty1 console=ttyS0" -net nic,model=virtio -net user -nographic -s -S
 ```
