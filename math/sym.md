@@ -61,7 +61,7 @@
 |$\overline{abc}$|`\overline{abc}`|$\overrightarrow{xy}$|`\overrightarrow{xy}`|
 |$()$|`()`|$[]$|`[]`|
 |$\{\}$|`\{\}`|$\angle$|`\angle`|
-|$\int\ \iint\ \iiint$|`\int` `\iint \iiint`(后两种github不支持)|$\oint\ \oiint\ \oiiint$|`\oint \oiint \oiiint`|
+|$\int\ \iint\ \iiint$|`\int \iint \iiint`|$\oint\ \oiint\ \oiiint$|`\oint` `\oiint \oiiint`(后两种github不支持)|
 |$\coprod$|`\coprod`|||
 |$\cup$|`\cup`|$\bigcup$|`\bigcup`|
 |$\cap$|`\cap`|$\bigcap$|`\bigcap`|
