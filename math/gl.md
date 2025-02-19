@@ -68,28 +68,28 @@
 性质:
 * $P(\emptyset) = 0$
 * 有限可加性: 若 $A_1, A_2, \ldots, A_n$ 是两两互不相容的事件, 则有  
-  ```math
-  P(A_1 \cup A_2 \cup \ldots \cup A_n) = P(A_1) + P(A_2) + \ldots + P(A_n)
-  ```
+```math
+P(A_1 \cup A_2 \cup \ldots \cup A_n) = P(A_1) + P(A_2) + \ldots + P(A_n)
+```
 * 设 $A, B$ 是两个事件, 若 $A \subset B$, 则有  
-  ```math
-  P(B - A) = P(B) - P(A)
-  ```  
-  ```math
-  P(B) \ge P(A)
-  ```
+```math
+P(B - A) = P(B) - P(A)
+```  
+```math
+P(B) \ge P(A)
+```
 * 对于任意事件 $A$ ,  
-  ```math
-  P(A) \le 1
-  ```
+```math
+P(A) \le 1
+```
 * 逆事件的概率: 对于任一事件 $A$ , 有  
-  ```math
-  P(\overline{A}) = 1 - P(A)
-  ```
+```math
+P(\overline{A}) = 1 - P(A)
+```
 * 加法公式: 对于任意两事件 $A, B$有  
-  ```math
-  P(A \cup B) = P(A) + P(B) - P(AB)
-  ```
+```math
+P(A \cup B) = P(A) + P(B) - P(AB)
+```
 
 ## 等可能概型(古典概型)
 等可能概型也称古典概型, 具有两个特点:
@@ -110,7 +110,7 @@ P(\{e_1\}) = P(\{e_2\}) = \ldots = P(\{e_n\})
 P(\{e_i\}) &= \frac{1}{n}, i = 1,2,\ldots,n
 \end{align*}
 ```
-若事件 $A$ 包含$k$个基本事件, 即 $A = \{e_{i_2}\} \cup \{e_{i_2}\} \cup \{e_{i_k}\}$, 这里 $i_1, i_2, \ldots, i_k$ 是 $1,2,\ldots,n$ 中某个 $k$ 个不同的数, 则有:  
+若事件 $A$ 包含 $k$ 个基本事件, 即 $A = \{e_{i_2}\} \cup \{e_{i_2}\} \cup \{e_{i_k}\}$, 这里 $i_1, i_2, \ldots, i_k$ 是 $1,2,\ldots,n$ 中某个 $k$ 个不同的数, 则有:  
 ```math
 P(A) = \sum_{j=1}^{k}P(\{e_{i_j}\}) = \frac{k}{n} = \frac{A包含的基本事件数}{S中基本事件的总数}
 ```
@@ -118,9 +118,9 @@ P(A) = \sum_{j=1}^{k}P(\{e_{i_j}\}) = \frac{k}{n} = \frac{A包含的基本事件
 
 ## 条件概率
 ### 条件概率
-在事件 $A$ 发生的条件下事件 $B$ 发生的概率(记为$P(B|A)$).
+在事件 $A$ 发生的条件下事件 $B$ 发生的概率(记为 $P(B|A)$ ).
 
-定义: 设 $A,B$ 是两个事件, 且$P(A) \gt 0$, 称  
+定义: 设 $A,B$ 是两个事件, 且 $P(A) \gt 0$ , 称  
 ```math
 P(B|A) = \frac{P(AB)}{P(A)}
 ```
