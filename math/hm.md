@@ -56,15 +56,15 @@
 
 # 微积分
 ## 数列的极限
-定义: 数列 $\{x_n\}$, $\exists$ 常数 $a$, $\forall \epsilon > 0$ (不管多小), $\exists$ 正整数 $N$, 使得当 $n > N$ 时, 有 $|x_n - a| < \epsilon$
+定义: 数列 $\{x_n\}$, $\exists$ 常数 $a$, $\forall \epsilon > 0$ (不管多小), $\exists$ 正整数 $N$, 使得当 $n > N$ 时, 有 $\lvert x_n - a \rvert < \epsilon$
 
 记为: $\lim_{n \to \infty}x_n = a$
 
 ## 极限的定义
 
-定义: 设 $f(x)$ 在 $x_0$ 的某去心邻域内有定义, $\exists$ 常数 `A`( $f(x)$ 的极限), $\forall \epsilon > 0$, $\exists \delta > 0$ 满足 $0 < |x-x_0| < \delta$.
+定义: 设 $f(x)$ 在 $x_0$ 的某去心邻域内有定义, $\exists$ 常数 `A`( $f(x)$ 的极限), $\forall \epsilon > 0$, $\exists \delta > 0$ 满足 $0 < \lvert x-x_0\rvert < \delta$.
 
-也就是: $|f(x) - A| < \epsilon$, 也就是 $\lim_{x \to x_0}f(x) = A$
+也就是: $\lvert f(x) - A\rvert < \epsilon$, 也就是 $\lim_{x \to x_0}f(x) = A$
 
 也就是 $f(x) \to A, (x \to x_0)$
 
@@ -72,7 +72,7 @@
 1) 函数在一点的导数
 $y = f(x)$ 在 $x_0$ 的某个去心邻域内有定义, $x$ 在 $x_0$ 去增量 $\Delta x$ (改变量), $\Delta y = f(x_0 + \Delta x) - f(x_0)$, 则: $f(x_0) = \lim_{\Delta x \to 0}\frac{\Delta y}{\Delta x} = \lim_{\Delta x \to 0}\frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}$ 存在.
 
-记为: $y'|_{x = x_0}$ , 或: $\frac{\mathrm{d}y}{\mathrm{d}x}|_{x = x_0}$ , 或 $\frac{\mathrm{d}f(x)}{\mathrm{d}x}|_{x = x_0}$
+记为: $y'\mid_{x = x_0}$ , 或: $\frac{\mathrm{d}y}{\mathrm{d}x}\mid_{x = x_0}$ , 或 $\frac{\mathrm{d}f(x)}{\mathrm{d}x}\mid_{x = x_0}$
 
 三种记法:
 ```math
