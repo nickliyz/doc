@@ -63,8 +63,8 @@ f_n(A_1 \cup A_2 \cup \ldots \cup A_k) = f_n(A_1) = f_n(A_2) + \ldots + f_n(A_k)
 1. 非负性: 对于每一个事件 $A$ , 有 $P(A)\ge 0$
 2. 规范性: 对于必然事件 $S$ , 有 $P(S) = 1$
 3. 可列加性: 设 $A_1, A_2, \ldots$ 是两两互不相容的事件, 即对于 $A_iA_j = \emptyset, i \ne j, i, j = 1, 2, \ldots$ 有  
-   ```math
-   P(A_1 \cup A_2 \ldots = P(A_1) + P(A_2) + \ldots```
+```math
+P(A_1 \cup A_2 \ldots = P(A_1) + P(A_2) + \ldots```
 
 性质:
 * $P(\emptyset) = 0$
@@ -193,7 +193,7 @@ P(AB)=P(A)P(B)
   * $\overline{A}\ 与\ B$
   * $\overline{A}\ 与\ \overline{B}$
 
-$A,B,C$相互独立: 设 $A,B,C$ 是三个事件, 如果满足等式: \\
+$A,B,C$相互独立: 设 $A,B,C$ 是三个事件, 如果满足等式:
 ```math
 \left.\begin{align*}
 P(AB) &= P(A)P(B) \\
