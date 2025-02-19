@@ -222,24 +222,6 @@ P\{X=x_k\} = p_k, k=1,2,\ldots
 2 是由于 $\{X=x_1\} \bigcup\limits_{k=1}^{\infty} \{X=x_k\}\ldots$是必然事件, 且 $\{X=x_j\} \cap \{X=x_k\} = \emptyset, k \ne j$, 故 $1 = P[\bigcup\limits_{k=1}^{\infty}\{X=x_k\}] = \sum_{k=1}^{\infty}P\{X=x_k\}$. 即 $\sum_{k=1}^{\infty}P_k=1$
 
 分布律也可以用表格表示:
-<style>
-    table {
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        border-bottom: 2px solid black;
-    }
-    td:first-child {
-        border-right: 2px solid black;
-    }
-    th:first-child {
-        border-right: 2px solid black;
-    }
-</style>
 | $X$   | $x_1$ | $x_2$ | $\ldots$ | $x_n$ | $\ldots$ |
 | ----- | ----- | ----- | -------- | ----- | -------- |
 | $p_k$ | $p_1$ | $p_2$ | $\ldots$ | $p_n$ | $\ldots$ |
