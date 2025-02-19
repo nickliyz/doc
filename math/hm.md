@@ -201,11 +201,11 @@ h(x) = f(x)g(x) \to h'(x) = f'(x)g(x) = f(x)g'(x)
 ```
 乘积法则(版本二):
 ```math
-(uv)' = u'v + v'u \xLeftrightarrow{等价于} \frac{\mathrm{d}y}{\mathrm{d}x} = v\frac{\mathrm{d}u}{\mathrm{d}x} + u\frac{\mathrm{d}v}{\mathrm{d}x}
+(uv)' = u'v + v'u \xLeftrightarrow{} \frac{\mathrm{d}y}{\mathrm{d}x} = v\frac{\mathrm{d}u}{\mathrm{d}x} + u\frac{\mathrm{d}v}{\mathrm{d}x}
 ```
 乘积法则(三乘法)
 ```math
-(uvw)' = u'vw + uv'w + uvw' \xLeftrightarrow{等价于} \frac{\mathrm{d}x}{\mathrm{d}x} = \frac{\mathrm{d}u}{\mathrm{d}x}uw + u\frac{\mathrm{d}v}{\mathrm{d}x}w + uv\frac{\mathrm{d}w}{\mathrm{d}x}
+(uvw)' = u'vw + uv'w + uvw' \xLeftrightarrow{} \frac{\mathrm{d}x}{\mathrm{d}x} = \frac{\mathrm{d}u}{\mathrm{d}x}uw + u\frac{\mathrm{d}v}{\mathrm{d}x}w + uv\frac{\mathrm{d}w}{\mathrm{d}x}
 ```
 
 商法则(版本一):
@@ -243,7 +243,8 @@ h(x) = f(g(x)) \to h'(x) = f'(g(x))g'(x)
 二项式的 $n$ 次方展开:
 ```math
 (a + b)^n = \mathbf{C}_n^0a^b = \mathbf{C}_n^1a^{n-1}b+\mathbf
-{C}_n^2a^{n-2}b^2+\ldots+\mathbf{C}_n^nb^n```
+{C}_n^2a^{n-2}b^2+\ldots+\mathbf{C}_n^nb^n
+```
 切线方程: 
 ```math
 y - y_0 = m(x - x_0)
