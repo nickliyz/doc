@@ -1,6 +1,6 @@
 # 希腊字母
 |小写希腊字母|语法|大写希腊字母|语法|
-|:-:|:-:|:-:|:-:|
+|-|-|-|-|
 |$\sigma$|`\sigma`|$\Alpha$|`\Alpha`|
 |$\beta$|`\beta`|$\Beta$|`\Beta`|
 |$\gamma$|`\gamma`|$\Gamma$|`\Gamma`|
@@ -35,7 +35,7 @@
 
 # 运算 & 符号
 |效果|语法|效果|语法|
-|:-:|:-:|:-:|:-:|
+|-|-|-|-|
 |$a^{bc}$|`a^{bc}`|$a_{bc}$|`a_{bc}`|
 |$\frac{a}{b}$|`\frac{a}{b}`|||
 |$\sqrt{xy}$|`\sqrt{xy}`|$\sqrt[n]{x}$|`\sqrt[n]{x}`|
@@ -52,7 +52,7 @@
 
 # 箭头
 |效果|语法|效果|语法|
-|:-:|:-:|:-:|:-:|
+|-|-|-|-|
 |$\uparrow$|`\uparrow`|$\downarrow$|`\downarrow`|
 |$\Uparrow$|`\Uparrow`|$\Downarrow$|`\Downarrow`|
 |$\updownarrow$|`\updownarrow`|$\Updownarrow$|`\Updownarrow`|
