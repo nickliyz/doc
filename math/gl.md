@@ -28,13 +28,13 @@
 不可能事件: 空集 $\emptyset$ 不包含任何样本点, 它作为样本空间的子集, 它在每次实验中都不发生
 
 ### 事件间的关系与事件的运算
-设实验 $E$ 的样本空间为 $S$ , 而 $A, B, A_k(k = 1, 2, \ldots)$是 $S$ 的子集:
-1. 若 $A \subset B$则称事件 $B$ 包含事件 $A$ , 这指的是事件  $A$ 发生必导致事件 $B$ 发生. 若 $A \subset B$ 且 $B \subset A$, 即 $A = B$, 则称事件 $A$ 与事件 $B$ 相等
-2. 事件 $A \cup B = {x|x \in A 且 x \in B}$ 称为事件 $A$ 与事件 $B$ 的**和事件**. 当且仅当  $A,B$  中至少有一个发生时, 事件 $A \cup B$发生. 类似的 $\bigcup\limits_{k=1}^{n}A_k$ 为 $n$ 个事件 $A_1,  A_2, \ldots, A_n$ 的和事件, 称 $\bigcup\limits_{k=1}^{n}A_k$ 为可列个事件 $A_1, A_2, \ldots$ 的和事件.
+设实验 $E$ 的样本空间为 $S$ , 而 $A, B, A_k(k = 1, 2, \ldots)$ 是 $S$ 的子集:
+1. 若 $A \subset B$ 则称事件 $B$ 包含事件 $A$ , 这指的是事件  $A$ 发生必导致事件 $B$ 发生. 若 $A \subset B$ 且 $B \subset A$, 即 $A = B$, 则称事件 $A$ 与事件 $B$ 相等
+2. 事件 $A \cup B = {x|x \in A 且 x \in B}$ 称为事件 $A$ 与事件 $B$ 的**和事件**. 当且仅当  $A,B$  中至少有一个发生时, 事件 $A \cup B$ 发生. 类似的 $\bigcup\limits_{k=1}^{n}A_k$ 为 $n$ 个事件 $A_1,  A_2, \ldots, A_n$  的和事件, 称 $\bigcup\limits_{k=1}^{n}A_k$ 为可列个事件 $A_1, A_2, \ldots$ 的和事件.
 3. 事件 $A \cap B = {x|x \in A 且 x \in B}$ 成为事件 $A$ 与事件 $B$ 的 **积事件**. 当且仅当  $A,B$  同时发生时, 事件 $A \cap B$发生. $A \cap B$ 也记作 $AB$, 类似地称 $\bigcap\limits_{k=1}^{n}A_k$ 为事件 $A_1,  A_2, \ldots, A_n$ 的积事件, 称 $\bigcap\limits_{k=1}^{n}A_k$ 为可列个事件 $A_1, A_2, \ldots$ 的积事件.
 4. 事件 $A-B={x|x \in A 且 x \notin B}$ 称为事件 $A$ 与事件 $B$ 的**差事件**, 当且仅当 $A$ 发生,  $B$ 不发生时事件 $A-B$ 发生.
-5. 若$A \cap B = \emptyset$, 则称事件 $A与B$ 是**互不相容**的, 或**互斥**的, 这指的是事件 $A$ 与事件 $B$ 不可能同时发生. 基本事件是两两互不相容的.
-6. 若$A \cup B = S 且 A \cap B = \emptyset$, 则称事件 $A$ 与事件 $B$ 互为**逆事件**, 又称事件 $A$ 与事件 $B$ 是**对立事件**. 这指的是对每次实验而言, 事件  $A,B$  中必有一个发生, 且仅有一个发生.  $A$ 的对立事件记为 $\overline{A}, \overline{A} = S - A$
+5. 若 $A \cap B = \emptyset$, 则称事件  $A$ 与 $B$ 是**互不相容**的, 或**互斥**的, 这指的是事件 $A$ 与事件 $B$ 不可能同时发生. 基本事件是两两互不相容的.
+6. 若 $A \cup B = S 且 A \cap B = \emptyset$, 则称事件 $A$ 与事件 $B$ 互为**逆事件**, 又称事件 $A$ 与事件 $B$ 是**对立事件**. 这指的是对每次实验而言, 事件  $A,B$  中必有一个发生, 且仅有一个发生.  $A$ 的对立事件记为 $\overline{A}, \overline{A} = S - A$
 
 运算规律
 * 交换律: $A \cup B = B \cup A$, $A \cap B = B \cap A$
