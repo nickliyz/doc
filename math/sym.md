@@ -37,12 +37,12 @@
 |效果|语法|说明|用途|
 |-|-|-|-|
 |$\mathcal{N}(\mu, \sigma^2)$|`\mathcal{N}(\mu, \sigma^2)`|花体字母|常用于表示集合、空间、或者分布等|
-|$\mathbb{R}$|`\mathbb{R}`|黑板粗体字母|常用于表示集合（如自然数集、整数集、有理数集、实数集、复数集）|
+|$\mathbb{R}$|`\mathbb{R}`|黑板粗体字母|常用于表示集合（如自然数集、整数集、有理数集、实数集、复数集）(github与斜体相同)|
 |$\mathbf{v}$|`\mathbf{v}`|粗体字母|常用于向量和矩阵|
 |$\mathit{A}$|`\mathit{A}`|斜体字母|常用于向量和矩阵|
 |$\mathrm{e}$|`\mathrm{e}`|直立字母|常用于表示数学中的常数或运算符|
-|$\mathsf{A}$|`\mathsf{A}`|无衬线字体|常用于特定需求的文本|
-|$\mathtt{A}$|`\mathtt{A}`|打字机字体|常用于代码或特殊符号|
+|$\mathsf{A}$|`\mathsf{A}`|无衬线字体|常用于特定需求的文本(github与斜体相同)|
+|$\mathtt{A}$|`\mathtt{A}`|打字机字体|常用于代码或特殊符号(github与斜体相同)|
 |$\mathfrak{g}$|`\mathfrak{g}`|哥特字体|常用于表示集合或代数结构|
 
 # 运算 & 符号
@@ -61,7 +61,7 @@
 |$\overline{abc}$|`\overline{abc}`|$\overrightarrow{xy}$|`\overrightarrow{xy}`|
 |$()$|`()`|$[]$|`[]`|
 |$\{\}$|`\{\}`|$\angle$|`\angle`|
-|$\int\ \iint\ \iiint$|`\int \iint \iiint`|$\oint\ \oiint\ \oiiint$|`\oint \oiint \oiiint`|
+|$\int\ \iint\ \iiint$|`\int` `\iint \iiint`(后两种github不支持)|$\oint\ \oiint\ \oiiint$|`\oint \oiint \oiiint`|
 |$\coprod$|`\coprod`|||
 |$\cup$|`\cup`|$\bigcup$|`\bigcup`|
 |$\cap$|`\cap`|$\bigcap$|`\bigcap`|
