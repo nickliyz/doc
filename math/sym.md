@@ -33,6 +33,18 @@
 |$\ell$|`\ell`|||
 |$\nu$|`\nu`|$\Nu$|`\Nu`(github不支持)|
 
+# 字体
+|效果|语法|说明|用途|
+|-|-|-|-|
+|$\mathcal{N}(\mu, \sigma^2)$|`\mathcal{N}(\mu, \sigma^2)`|花体字母|常用于表示集合、空间、或者分布等|
+|$\mathbb{R}$|`\mathbb{R}`|黑板粗体字母|常用于表示集合（如自然数集、整数集、有理数集、实数集、复数集）|
+|$\mathbf{v}$|`\mathbf{v}`|粗体字母|常用于向量和矩阵|
+|$\mathit{A}$|`\mathit{A}`|斜体字母|常用于向量和矩阵|
+|$\mathrm{e}$|`\mathrm{e}`|直立字母|常用于表示数学中的常数或运算符|
+|$\mathsf{A}$|`\mathsf{A}`|无衬线字体|常用于特定需求的文本|
+|$\mathtt{A}$|`\mathtt{A}`|打字机字体|常用于代码或特殊符号|
+|$\mathfrak{g}$|`\mathfrak{g}`|哥特字体|常用于表示集合或代数结构|
+
 # 运算 & 符号
 |效果|语法|效果|语法|
 |-|-|-|-|
@@ -49,6 +61,18 @@
 |$\overline{abc}$|`\overline{abc}`|$\overrightarrow{xy}$|`\overrightarrow{xy}`|
 |$()$|`()`|$[]$|`[]`|
 |$\{\}$|`\{\}`|$\angle$|`\angle`|
+|$\int\ \iint\ \iiint$|`\int \iint \iiint`|$\oint\ \oiint\ \oiiint$|`\oint \oiint \oiiint`|
+|$\coprod$|`\coprod`|||
+|$\cup$|`\cup`|$\bigcup$|`\bigcup`|
+|$\cap$|`\cap`|$\bigcap$|`\bigcap`|
+|$\vee$|`\vee`|$\bigvee$|`\bigvee`|
+|$\wedge$|`\wedge`|$\bigwedge$|`\bigwedge`|
+|$\oplus$|`\oplus`|$\bigoplus$|`\bigoplus`|
+|$\ominus$|`\ominus`|||
+|$\otimes$|`\otimes`|$\bigotimes$|`\bigotimes`|
+|$\odot$|`\odot`|$\bigodot$|`\bigodot`|
+|$\oslash$|`\oslash`|$\lnot$|`\lnot`|
+|$\mathrm{d}$|`\mathrm{d}`|||
 
 # 箭头
 |效果|语法|效果|语法|
@@ -66,3 +90,19 @@
 |$X\xLeftrightarrow[a]{f(a,b,c)}$|`X\xLeftrightarrow[a]{f(a,b,c)}`|||
 
 # 关系运算
+|符号|语法|符号|语法|
+|-|-|-|-|
+|$<$|`<`|$>$|`>`|
+|$=$|`=`|$\neq$|`\neq`|
+|$\equiv$|`\equiv`|$\approx$|`\approx`|
+|$\sim$|`\sim`|$\nsim$|`\nsim`|
+|$\leq$|`\leq`|$\geq$|`\geq`|
+|$\leqq$|`\leqq`|$\geqq$|`\geqq`|
+|$\ll$|`\ll`|$\gg$|`\gg`|
+|$\lll$|`\lll`|$\ggg$|`\ggg`|
+|$\subset$|`\subset`|$\supset$|`\supset`|
+|$\subseteq$|`\subseteq`|$\supseteq$|`\supseteq`|
+|$\in$|`\in`|$\ni$|`\ni`|
+|$\notin$|`\notin`|$\propto$|`\propto`|
+|$\parallel$|`\parallel`|$\perp$|`\perp`|
+|$\vdash$|`\vdash`|$\dashv$|`\dashv`|
