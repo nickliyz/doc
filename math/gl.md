@@ -54,8 +54,9 @@
 1. $0 \le f_n(A) \le 1$
 2. $f_n(S) = 1$
 3. 若 $A_1, A_2, \ldots, A_k$ 是两两不相容的事件, 则:  
-    ```math
-    f_n(A_1 \cup A_2 \cup \ldots \cup A_k) = f_n(A_1) = f_n(A_2) + \ldots + f_n(A_k)```
+```math
+f_n(A_1 \cup A_2 \cup \ldots \cup A_k) = f_n(A_1) = f_n(A_2) + \ldots + f_n(A_k)
+```
 
 ### 概率
 定义: 设 $E$ 是随机实验,  $S$ 是它的样本空间, 对于 $E$ 的每一个事件 $A$ 赋予一个实数, 记为 $P(A)$, 称为事件 $A$ 的**概率**, 如果集合函数 $P(\cdot)$ 满足下列条件:
@@ -130,9 +131,9 @@ P(B|A) = \frac{P(AB)}{P(A)}
 1. 非负性: 对于每一个事件 $B$ , 有 $P(B|A) \ge 0$
 2. 规范性: 对于必然事件 $S$ , 有 $P(S|A) = 1$
 3. 可列可加性: 设 $B_1,B_2\dots$ 是两两互不相容的事件, 则有
-   ```math
-   P(\bigcup\limits_{i=1}^{\infty}B_i|A) = \sum_{i=1}^{\infty}P(B_i|A)
-   ```
+```math
+P(\bigcup\limits_{i=1}^{\infty}B_i|A) = \sum_{i=1}^{\infty}P(B_i|A)
+```
 既然条件概率符合上述三个条件, 故对于任意事件 $B_1,B_2$ 有  
 ```math
 P(B_1 \cup B_2 | A) = P(B_1|A) + P(B_2|A) - P(B_1B_2|A)
