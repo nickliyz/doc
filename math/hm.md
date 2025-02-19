@@ -56,7 +56,7 @@
 
 # 微积分
 ## 数列的极限
-定义: 数列 $\{x_n\}$, $\exists$ 常数 $a$, $\forall \epsilon > 0$ (不管多小), $\existss$ 正整数 $N$, 使得当 $n > N$ 时, 有 $|x_n - a| < \epsilon$
+定义: 数列 $\{x_n\}$, $\exists$ 常数 $a$, $\forall \epsilon > 0$ (不管多小), $\exists$ 正整数 $N$, 使得当 $n > N$ 时, 有 $|x_n - a| < \epsilon$
 
 记为: $\lim_{n \to \infty}x_n = a$
 
