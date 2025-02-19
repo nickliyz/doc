@@ -62,7 +62,7 @@
 
 ## 极限的定义
 
-定义: 设 $f(x)$ 在 $x_0$ 的某去心邻域内有定义, $\exists$ 常数 `A`( $f(x)$ 的极限), $\forall \epsilon > 0$, $\exists \delta > 0$ 满足 $0 < \lvert x-x_0\rvert < \delta$.
+定义: 设 $f(x)$ 在 $x_0$ 的某去心邻域内有定义, $\exists$ 常数 $\mathrm{A}$( $f(x)$ 的极限), $\forall \epsilon > 0$, $\exists \delta > 0$ 满足 $0 < \lvert x-x_0\rvert < \delta$.
 
 也就是: $\lvert f(x) - A\rvert < \epsilon$, 也就是 $\lim_{x \to x_0}f(x) = A$
 
