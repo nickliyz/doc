@@ -304,3 +304,49 @@ P\{X=k\}=\frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}, k=0,1,2,\cdots
 ```math
 \lim_{n \to \infty}\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} = \frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}
 ```
+
+## 随机变量的分布函数
+定义 $X$ 是一个随机变量, $x$ 是任意实数, 函数
+```math
+E(x)=P\{X \le x\}, -\infty < x < \infty
+```
+成为 $X$ 的分布函数. 
+
+对于任意实数 $x_1,x_2(x_1<x_2)$ , 有
+```math
+\begin{align*}
+P\{x_1 < X \le x_2\} &= P\{X \le x_2\} - P\{X \le x_1\} \\
+&= F(x_2) - F(x_1)
+\end{align*}
+```
+因此, 若已知 $X$ 的分布函数, 我们就知道 $X$ 落在任一区间 $(x_1,x_2]$ 上的概率, 从这个意义上说, 分布函数完整的描述了随机变量的统计规律性.
+
+分布函数 $F(x)$ 具有以下基本性质:
+* $F(x)$ 是一个不减函数. 
+  事实上, 对于任意实数 $x_1,x_2(x_1<x_2)$, 有
+```math
+F(x_2) - F(x_1) = P\{x_1< X \le x_2\} \ge 0
+```
+* $0 \le F(x) \le 1$, 且
+```math
+\begin{align*}
+F(-\infty) &= \lim_{x \to -\infty}F(x) = 0, \\
+F(\infty) &= \lim_{x \to \infty}F(x) = 1.
+\end{align*}
+```
+* $F(x+0)=F(x)$, 即 $F(x)$ 是右连续的
+
+## 连续随机变量及其概率密度
+如果对于随机变量 $X$ 的分布函数 $F(x)$ , 存在非负函数 $f(x)$, 使对于任意实数 $x$ 有
+```math
+F(x) = \int_{-\infty}^{x}f(t)\mathrm{d}x
+```
+则称 $X$ 为**连续随机变量**, 其中函数 $f(x)$ 称为 $X$ 的**概率密度函数**, 简称**概率密度**.
+
+概率密度具有一下性质:
+* $f(x) > 0$
+* $\int_{-\infty}^{\infty}f(x)\mathrm{d}x=1$
+* 对于任意实数 $x_1,x_2(x_1 \le x_2)$,
+```math
+P\{x_1 < X \le x_2\} = F(x_2) - F(x_1) = \int_{x_1}^{x_2}f(x)\mathrm{d}x
+```
