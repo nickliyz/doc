@@ -253,9 +253,9 @@ P(C_1C_2\ldots C_n) = P(C_1)P(C_2)\ldots P(C_n)
 ```math
 \underbrace{p \cdot p \cdot \ldots \cdot p}_{k个} \cdot \underbrace{(1-p)\cdot(1-p)\cdot\ldots\cdot(1-p)}_{n-k个}=p^k(1-p)^{n-k}
 ```
-这种制定的方式共有 $\begin{pmatrix} n k \end{pmatrix}$ 种, 它们是两两互不相容的, 故在 $n$ 此实验中 $A$ 发生 $k$ 此的概率为 $\begin{pmatrix} n \\ k \end{pmatrix}p^k(1-p)^{n-k}$ , 记 $q = 1 - p$ , 既有:
+这种制定的方式共有 $\begin{pmatrix} n \ k \end{pmatrix}$ 种, 它们是两两互不相容的, 故在 $n$ 此实验中 $A$ 发生 $k$ 此的概率为 $\begin{pmatrix} n \\ k \end{pmatrix}p^k(1-p)^{n-k}$ , 记 $q = 1 - p$ , 既有:
 ```math
-P\{x=k\}=\begin{pmatrix} n \\ k \end{pmatrix}p^kq^{n-k},\  k=0,1,2,\cdots,n.
+P\{x=k\}=\begin{pmatrix} n \ k \end{pmatrix}p^kq^{n-k},\  k=0,1,2,\cdots,n.
 ```
 显然
 ```math
@@ -264,7 +264,7 @@ P\{X=k\} \ge 0, k=0,1,2,\cdots,n;
 ```math
 \sum_{k=0}^{n}P\{X=k\}=\sum_{k=0}^{n}\begin{pmatrix} n \\ k \end{pmatrix}p^kq^{n-k}=(p+q)^n=1
 ```
-注意到 $\begin{pmatrix} n k \end{pmatrix}p^kq^{n-k}$ 刚好是二项式 $(p+q)^n$ 的展开式中出现 $p^k$ 的那一项, 我们称随机变量 $X$ 服从参数为 $n,p$ 的二项分布, 并极为 $X \sim \mathcal{b}(n,p)$
+注意到 $\begin{pmatrix} n \\ k \end{pmatrix}p^kq^{n-k}$ 刚好是二项式 $(p+q)^n$ 的展开式中出现 $p^k$ 的那一项, 我们称随机变量 $X$ 服从参数为 $n,p$ 的二项分布, 并极为 $X \sim \mathcal{b}(n,p)$
 
 ### 泊松分布
 设随机变量 $X$ 所有可能的取值为 $0,1,2,\cdots$ , 而取各个值的概率为
