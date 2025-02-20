@@ -226,7 +226,7 @@ P\{X=x_k\} = p_k, k=1,2,\ldots
 | ----- | ----- | ----- | -------- | ----- | -------- |
 | $p_k$ | $p_1$ | $p_2$ | $\ldots$ | $p_n$ | $\ldots$ |
 
-## $(0-1)$分布
+### $(0-1)$分布
 设随机变量 $X$ 只可能取0与1两个值, 它的分布规律是:
 ```math
 P\{X=k\} = p^k(1-p)^{1-k},k=0,1
@@ -244,4 +244,51 @@ X=X(e)=\begin{cases}
 \end{cases}
 ```
 
-## 伯努利试验/二项分布
+### 伯努利试验/二项分布
+设试验 $E$ 只有两个可能结果: $A 及 \overline{A}$ , 则城 $E$ 为**伯努利**(*Bernoulli*)**试验**. 设 $P(A)=p(0<p<1)$ , 此时 $P(\overline{A})=1-p$. 将E独立重复地执行 $n$ 次, 则称一串重复的独立试验为 $n$ **重伯努利试验**. 即:
+```math
+P(C_1C_2\ldots C_n) = P(C_1)P(C_2)\ldots P(C_n)
+```
+概率:
+```math
+\underbrace{p \cdot p \cdot \ldots \cdot p}_{k个} \cdot \underbrace{(1-p)\cdot(1-p)\cdot\ldots\cdot(1-p)}_{n-k个}=p^k(1-p)^{n-k}
+```
+这种制定的方式共有 $\begin{pmatrix} n \\ k \end{pmatrix}$ 种, 它们是两两互不相容的, 故在 $n$ 此实验中 $A$ 发生 $k$ 此的概率为 $\begin{pmatrix} n \\ k \end{pmatrix}p^k(1-p)^{n-k}$ , 记 $q = 1 - p$ , 既有:
+```math
+P\{x=k\}=\begin{pmatrix} n \\ k \end{pmatrix}p^kq^{n-k},\  k=0,1,2,\cdots,n.
+```
+显然
+```math
+P\{X=k\} \ge 0, k=0,1,2,\cdots,n;
+```
+```math
+\sum_{k=0}^{n}P\{X=k\}=\sum_{k=0}^{n}\begin{pmatrix} n \\ k \end{pmatrix}p^kq^{n-k}=(p+q)^n=1
+```
+注意到 $\begin{pmatrix} n \\ k\end{pmatrix}p^kq^{n-k}$ 刚好是二项式 $(p+q)^n$ 的展开式中出现 $p^k$ 的那一项, 我们称随机变量 $X$ 服从参数为 $n,p$ 的二项分布, 并极为 $X \sim \mathcal{b}(n,p)$
+
+### 泊松分布
+设随机变量 $X$ 所有可能的取值为 $0,1,2,\cdots$ , 而取各个值的概率为
+```math
+P\{X=k\}=\frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}, k=0,1,2,\cdots
+```
+其中 $\lambda > 0$ 是常数, 则称 $X$ 服从参数为 $\lambda$ 的**泊松分布**, 记为 $X \sim \pi(\lambda)$
+
+泊松定理: 设 $\lambda >0$ 是一个常数, $n$ 是任意正整数, 设 $np_n=\lambda$ , 则对于任一固定的非负整数 $k$ 有
+```math
+\lim_{n \to \infty}\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} \approx \frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}
+```
+证, 由 $p_n=\frac{\lambda}{n}$ 有
+```math
+\begin{align*}
+\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} &= \frac{n(n-1)\cdots(n-k+1)}{k!}(\frac{\lambda}{n})^k(1-\frac{\lambda}{n})^{n-k} \\
+&= \frac{\lambda^k}{k!}[1\cdot(1-\frac{1}{n})\cdots(1-\frac{k-1}{n})](1-\frac{\lambda}{n})^n(1-\frac{\lambda}{n})^{-k}
+\end{align*}
+```
+对于任意固定的 $k$, 当 $n \to \infty$ 时
+```math
+1\cdot(1-\frac{1}{n})\cdots(1-\frac{k-1}{n}) \to 1,\ (1-\frac{\lambda}{n})^n \to \mathrm{e}^{-\lambda},\ (1-\frac{\lambda}{n})^{-k} \to 1.
+```
+故有
+```math
+\lim_{n \to \infty}\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} = \frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}
+```
