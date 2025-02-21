@@ -302,7 +302,7 @@ P\{X=k\}=\frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}, k=0,1,2,\cdots
 ```
 故有
 ```math
-\lim_{n \to \infty}\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} = \frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}
+\lim_{n \to \infty}\begin{pmatrix} n \\ k \end{pmatrix}p_n^k(1-p)^{n-k} \approx \frac{\lambda^k\mathrm{e}^{-\lambda}}{k!}
 ```
 
 ## 随机变量的分布函数
@@ -350,3 +350,42 @@ F(x) = \int_{-\infty}^{x}f(t)\mathrm{d}x
 ```math
 P\{x_1 < X \le x_2\} = F(x_2) - F(x_1) = \int_{x_1}^{x_2}f(x)\mathrm{d}x
 ```
+
+### 均匀分布
+若连续型随机变量 $X$ 具有概率密度为:
+```math
+f(x)=\begin{cases}
+\displaystyle\frac{1}{b-a} && a < x < b \\
+0 && 其他
+\end{cases}
+```
+则称 $X$ 在区间 $(a,b)$ 上服从**均匀分布**. 记作 $X \sim \mathcal{U}(a,b)$
+
+### 指数分布
+若连续型随机变量 $X$ 具有概率密度为:
+```math
+f(x)=\begin{cases}
+\displaystyle\frac{1}{\theta}\mathrm{e}^{-x/\theta} && x>0\\
+0 && 其他
+\end{cases}
+```
+其中 $\theta > 0$ 为常熟, 则称 $X$ 服从参数为 $\theta$ 的 **指数分布**.
+
+### 正态分布
+若连续型随机变量 $X$ 具有概率密度为:
+```math
+f(x)=\frac{1}{\sqrt{2\pi\delta}}\mathrm{e}^{-\frac{(x-\mu)^2}{2\delta^2}},-\infty < x < \infty
+```
+其中 $\mu, \delta(\delta > 0)$ 为常数.则称 $X$ 服从参数为 $\mu,\delta$ 的**正态分布**或**高斯**(Gauss)分布, 记为 $X \sim \mathcal{N}(\mu,\delta^2)$
+
+## 随机变量的函数的分布
+**定理** 设随机变量 $X$ 具有概率密度 $f_X(x),-\infty<x<\infty$ , 有设函数 $g(x)$ 处处可导且恒有 $g'(x)>0$(或恒有 $g'(x)<0$ ), 则 $Y=g(X)$ 是连续型随机变量, 其概率密度为:
+```math
+f_Y(y)=\begin{cases}
+f_X[h(y)]|h'(y)| && \alpha < y < \beta \\
+0 && 其他
+\end{cases}
+```
+其中 $\alpha=\min\{g(-\infty),g(\infty)\}, \beta=\max\{g(-\infty),g(\infty)\}$, $h(y)$ 是 $g(x)$ 的反函数.
+
+# 多维随机变量及其分布
