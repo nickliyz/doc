@@ -459,8 +459,5 @@ n 阶范德蒙行列式($n>2$)的值为:
 |\mathbf{A}|=\sum_{1\le j_1<j_2<\cdots<j_k\le n}\mathbf{A}\begin{pmatrix}
     i_1,i_2,\cdots,i_k \\
     j_1,j_2,\cdots,j_k
-\end{pmatrix}(-1)^{(i_1+i_2+\cdots+i_k)+(j_1+j_2+\cdots+j_k)}\begin{pmatrix}
-    i_1',i_2',\cdots,i_k' \\
-    j_1',j_2',\cdots,j_k'
 \end{pmatrix}
 ```
