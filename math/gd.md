@@ -441,7 +441,7 @@ n 阶范德蒙行列式($n>2)的值为:
 **定理 1** 和 **定理 2** 合起来称为**克莱姆(Cramer)法则**
 
 ## 行列式按 k 行(列) 展开
-**定义 1** n 阶行列式 $|\mathbf{A}|$ 中任意取定 k 行, k 列 ($1 \le k \lt n), 位于这些行列的交叉处的 $k^2$ 个元素按照原来的排法组成的 k 阶行列式, 称 $|\mathbf{A}|$ 的一个 **k 阶子式**. 取定 $|\mathbf{A}|$ 的第 $i_1,i_2,\cdots,i_k$ 行 ($i_1<i_2<\cdots<i_k$), 第 $j_1,j_2,\cdots,j_k$ 列 ($j_1<j_2<\cdots<j_k$), 所得到的 k 阶子式记作:
+**定义 1** n 阶行列式 $|\mathbf{A}|$ 中任意取定 k 行, k 列 ( $1 \le k \lt n$ ), 位于这些行列的交叉处的 $k^2$ 个元素按照原来的排法组成的 k 阶行列式, 称 $|\mathbf{A}|$ 的一个 **k 阶子式**. 取定 $|\mathbf{A}|$ 的第 $i_1,i_2,\cdots,i_k$ 行 ($i_1<i_2<\cdots<i_k$), 第 $j_1,j_2,\cdots,j_k$ 列 ($j_1<j_2<\cdots<j_k$), 所得到的 k 阶子式记作:
 ```math
 \mathbf{A}\begin{pmatrix}
     i_1,i_2,\cdots,i_k \\
