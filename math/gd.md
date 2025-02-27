@@ -378,7 +378,7 @@ a_{i1}\mathbf{A}_{k1}+a_{i2}\mathbf{A}_{k2}+\cdots+a_{in}\mathbf{A}_{kn}\ ,\  �
 a_{1j}\mathbf{A}_{1l}+a_{2j}\mathbf{A}_{2l}+\cdots+a_{nj}\mathbf{A}_{nl}\ ,\  当\ l\neq j
 ```
 
-n 阶范德蒙行列式($n>2)的值为:
+n 阶范德蒙行列式($n>2$)的值为:
 ```math
 \begin{vmatrix}
     1 && 1 && 1 && \cdots && 1 \\
