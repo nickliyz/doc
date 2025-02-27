@@ -456,8 +456,11 @@ n 阶范德蒙行列式($n>2$)的值为:
 
 **定理 1(Laplace定理)** 在 n 阶行列式 $|\mathbf{A}|$ 中, 取定第 $i_1,i_2,\cdots,i_k$ 行 ($i_1<i_2<\cdots<i_k$), 则这 k 行元素所形成的所有 k 阶子式与他们自己的代数余子式的乘积之和等于 $|\mathbf{A}|$, 即:
 ```math
-|\mathbf{A}|=\sum_{1\le j_1<j_2<\cdots<j_k\le n}\mathbf{A}\begin{pmatrix}
+|\mathbf{A}|=\sum_{1\le j_1 \lt j_2 \lt \cdots \lt j_k\le n}\mathbf{A}\begin{pmatrix}
     i_1,i_2,\cdots,i_k \\
     j_1,j_2,\cdots,j_k
+\end{pmatrix}(-1)^{(i_1+i_2+\cdots+i_k)+(j_1+j_2+\cdots+j_k)}\begin{pmatrix}
+    i_1',i_2',\cdots,i_k' \\
+    j_1',j_2',\cdots,j_k'
 \end{pmatrix}
 ```
