@@ -6,9 +6,9 @@
 ```math
 \left\{\begin{align*}
     a_{11}x_1+a_{12}+\cdots+a_{1n}x_n&=b_1 \\
-    a_{21}x_1+a_{22}+\cdots+a_{2n}x_n&=b_1 \\
+    a_{21}x_1+a_{22}+\cdots+a_{2n}x_n&=b_2 \\
     \cdots \\
-    a_{n1}x_1+a_{n2}+\cdots+a_{nn}x_n&=b_1 \\
+    a_{n1}x_1+a_{n2}+\cdots+a_{nn}x_n&=b_n \\
 \end{align*}\right.
 ```
 其中 $a_{11},a_{12},\cdots,a_{nn}$ 是系数, $b_{1},b_{2},\cdots,b_{n}$ 是常数项, 常数项一般写在等号右边.
@@ -395,9 +395,9 @@ n 阶范德蒙行列式($n>2$)的值为:
 ```math
 \left\{\begin{align*}
     a_{11}x_1+a_{12}+\cdots+a_{1n}x_n&=b_1 \\
-    a_{21}x_1+a_{22}+\cdots+a_{2n}x_n&=b_1 \\
+    a_{21}x_1+a_{22}+\cdots+a_{2n}x_n&=b_2 \\
     \cdots \\
-    a_{n1}x_1+a_{n2}+\cdots+a_{nn}x_n&=b_1 \\
+    a_{n1}x_1+a_{n2}+\cdots+a_{nn}x_n&=b_n \\
 \end{align*}\right.
 ```
 令
@@ -452,15 +452,315 @@ n 阶范德蒙行列式($n>2$)的值为:
 ```math
 (-1)^{(i_1+i_2+\cdots+i_k)+(j_1+j_2+\cdots+j_k)}
 ```
-则称为上述子式的代数余子式.
+则称为上述子式的代数余子式. 令
+```
+\begin{align*}
+    \{i_1',i_2',\cdots,i_{n-k}'\} &= \{1,2,\cdots,n\}\backslash\{i_1,i_2,\cdots,i_k\} \\
+    \{j_1',i_2',\cdots,j_{n-k}'\} &= \{1,2,\cdots,n\}\backslash\{j_1,j_2,\cdots,j_k\}
+\end{align*}
+```
+并且 $i_1'\lt i_2' \lt\cdots\lt i_{n-k}', j'\lt j_2'\lt\cdots\lt j_{n-k}'$, 则余子式为:
+```
+\mathbf{A}\begin{pmatrix}
+    i_1',i_2',\cdots,i_{n-k}' \\
+    j_1',j_2',\cdots,j_{n-k}'
+\end{pmatrix}
+```
 
 **定理 1(Laplace定理)** 在 n 阶行列式 $|\mathbf{A}|$ 中, 取定第 $i_1,i_2,\cdots,i_k$ 行 ($i_1 \lt i_2 \lt \cdots \lt i_k$), 则这 k 行元素所形成的所有 k 阶子式与他们自己的代数余子式的乘积之和等于 $|\mathbf{A}|$, 即:
 ```math
 |\mathbf{A}|=\sum_{1\le j_1 \lt j_2 \lt \cdots \lt j_k\le n}\mathbf{A}\begin{pmatrix}
     i_1,i_2,\cdots,i_k \\
     j_1,j_2,\cdots,j_k
-\end{pmatrix}(-1)^{(i_1+i_2+\cdots+i_k)+(j_1+j_2+\cdots+j_k)}\begin{pmatrix}
+\end{pmatrix}(-1)^{(i_1+\cdots+i_k)+(j_1+\cdots+j_k)}\begin{pmatrix}
     i_1',i_2',\cdots,i_k' \\
     j_1',j_2',\cdots,j_k'
 \end{pmatrix}
 ```
+
+# 线性方程组的解集的结构
+## n 维向量空间 $\mathbb{K}^n$
+取定一个数域 $\mathbb{K}$, 设 n 是任意给定的一个正整数. 令
+```
+\mathbb{K}^n=\{(a_1,a_2,\cdots,a_n)\mid a_i \in \mathbb{K},i=1,2,\cdots,n\}
+```
+如果 $a_1=b_1,a_2=b_2,\cdots,a_n=b_n$, 则称 $\mathbb{K}^n$ 中两个元素 $(a_1,a_2,\cdots,a_n)$ 与 $(b_1,b_2,\cdots,b_n)$ 相等. 
+
+在 $\mathbb{K}^n$ 中规定加法运算如下:
+```math
+(a_1,a_2,\cdots,a_n) + (b_1,b_2,\cdots,b_n) \\
+\xlongequal{\mathrm{def}}(a_1+b_1,a_2+b_2,\cdots,a_n+b_n)
+```
+在 $\mathbb{K}$ 的元素与 $\mathbb{K}^n$ 的元素之间规定的数量乘法运算如下:
+```math
+k(a_1,a_2,\cdots,a_n) \xlongequal{\mathrm{def}}(ka_1,ka_2,\cdots,ka_n)
+```
+
+容易直接验证加法和数量乘法满足如下8条运算法则: 对于 $\vec{\alpha}, \vec{\beta}, \vec{\gamma} \in \mathbb{K}$, 有:
+1. $\vec{\alpha} + \vec{\beta} = \vec{\beta} + \vec{\alpha}$
+2. $(\vec{\alpha} + \vec{\beta}) + \vec{\gamma} = \vec{\alpha} + (\vec{\beta} + vec{\gamma})$
+3. 把元素 $(0,0,\cdots,0)$ 记作 $\vec{0}$, 它使得:
+```math
+\vec{0} + \vec{a} = \vec{a} + \vec{0} = \vec{a}
+```
+称 $\vec{0}$ 是 $\mathbb{K}$ 的零元素.
+
+4. 对于 $\vec{a}=(a_1,a_2,\cdots,a_n) \in \mathbb{K}^n$, 令
+```math
+-\vec{a}\xlongequal{\mathrm{def}}(-a_1,-a_2,\cdots,-a_n) \in \mathbb{K}^n
+```
+有
+```math
+\vec{\alpha} + (-\vec{\alpha}) = (-\vec{\alpha})+\vec{\alpha}=\vec{0}
+```
+5. $1\vec{\alpha}=\vec{\alpha}$
+6. $(kl)\vec{\alpha}=k(l\vec{\alpha})$
+7. $(k+l)\vec{\alpha}=k\vec{\alpha}+l\vec{\alpha}$
+8. $k(\vec{\alpha} + \vec{\beta}) = k\vec{\alpha}+k\vec{\beta}$
+
+**定义 1** 数域 $\mathbb{K}$ 上所有 n 元有序数组组成的集合 $\mathbb{K}^n$, 连同定义在它上面的加法运算和数量乘法运算, 及其满足的 8 条运算法则一起, 称为数域 $\mathbb{K}$ 上的一个 **n 维向量空间**. $\mathbb{K}^n$ 的元素称为 **n维向量**. 设向量 $\vec{a}=(a_1,a_2,\cdots,a_n)$ , 称 $a_i$ 是 $\vec{a}$ 的第 $i$ 个**分量**.
+
+通常用小写希腊字母 $\vec{\alpha}, \vec{\beta}, \alpha{\beta} \codts$ 表示向量.
+
+在 n 维向量空间 $\mathbb{K}^n$ 中, 可以定义减法运算如下:
+```math
+\vec{\alpha}-\vec{\beta}\xlongequal{\mathrm{def}}\vec{\alpha} + (-\vec{\beta})
+```
+
+在 n 维向量空间 $\mathbb{K}^n$ 中, 容易直接验证下述 4 条性质:
+1. $0\vec{\alpha}=\vec{0}, \forall \vec{\alpha} \in \mathbb{K}^n$
+2. $(-1)\vec{\alpha}=-\vec{\alpha}, \forall \vec{\alpha} \in \mathbb{K}^n$
+3. $k\vec{0}=\vec{0}, \forall k \in \mathbb{K}$
+4. $k\vec{\alpha} \Rightarrow k=0 或 \vec{\alpha}=\vec{0}$
+
+n 元有序数组写成一行 $(a_1,a_2,\cdots,a_n)$, 称为**行向量**. 写成一列:
+```math
+\begin{bmatrix}
+    a1 \\ a2 \\ \vdots \\ a_n
+\end{bmatrix}
+```
+称为**列向量**. 列向量可以看成是相应的行向量的转置. 列向量可写成 $(a_1,a_2,\cdots,a_n)'$
+
+$\mathbb{K}^n$ 可以看成是 n 维行向量组成的向量空间, 也可以看成是 n 维列向量组成的向量空间.
+
+在 $\mathbb{K}^n$ 中, 由于加法和数量乘法两种运算, 给定向量组: $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$, 任给 $\mathbb{K}$ 中一组数 $k_1,k_2,\cdots,k_s$, 就可以得到一个向量 $k_1\vec{\alpha}_1,k_2\vec{\alpha}_2,\cdots,k_s\vec{\alpha}_s$, 称这个向量是向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_n$ 的一个线性组合, 其中 $k_1,k_2,\cdots,k_s$ 称为 **系数**.
+
+在 $\mathbb{K}$ 中, 给定向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$, 对于 $\vec{\beta}\in \mathbb{K}^n$ 如果存在 $\mathbb{K}$ 中一组数 $c_1, c_2, \cdost, c_s$ 使得:
+```math
+\vec{\beta}=c_1\vec{\alpha}_1+c_2\vec{\alpha}_2+\cdots+c_s\vec{\alpha}_s
+```
+那么称 $\vec{\beta}$ 可以由 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ **线性表出**
+利用向量的加法运算和乘法元算, 可以把数域 $\mathbb{K}$ 上 n 元线性方程组
+```math
+\left\{\begin{align*}
+    a_{11}x_1+a_{12}+\cdots+a_{1n}x_n&=b_1 \\
+    a_{21}x_1+a_{22}+\cdots+a_{2n}x_n&=b_2 \\
+    \cdots \\
+    a_{s1}x_1+a_{s2}+\cdots+a_{sn}x_n&=b_s \\
+\end{align*}\right.
+```
+写成:
+```math
+x_1\begin{bmatrix}
+    a_{11} \\ a_{21} \\ \vdots \\ a_{s1}
+\end{bmatrix}+x_2\begin{bmatrix}
+    a_{12} \\ a_{22} \\ \vdots \\ a_{s2}
+\end{bmatrix}+\cdots+x_n\begin{bmatrix}
+    a_{1n} \\ a_{2n} \\ \vdots \\ a_{sn}
+\end{bmatrix}=\begin{bmatrix}
+    b_1 \\ b_2 \\ \vdots \\ b_s
+\end{bmatrix}
+```
+即: $x_1\vec{\alpha}_1+x_2\vec{\alpha}_2+\cdots x_n\vec{\alpha}_n=\vec{\beta}$
+
+其中 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_n$ 是线性方程组的系数矩阵的列向量组. $\vec{\beta}$ 是由常数项组成的列向量. 于是
+
+数域 $\mathbb{K}$ 上线性方程组 $x_1\vec{\alpha}_1+x_2\vec{\alpha}_2+\cdots x_n\vec{\alpha}_n=\vec{\beta}$ 有解 $\xLeftrightarrow{}$ $\mathbb{K}$ 中存在一组书 $c_1,c_2,\cdots,c_n$ 使得下式成立:
+```math
+c_1\vec{\alpha}_1+c_2\vec{\alpha}_2+\cdots+c_s\vec{\alpha}_s=\vec{\beta}
+```
+$\xLeftrightarrow{}$ $\vec{\beta}$可以由 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_n$ 线性表出.
+
+把向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ 的所有线性组合组成一个组合 $\mathbf{W}$ 即
+```math
+\mathbf{W}\xlongequal{\mathrm{def}}=\{k_1\vec{\alpha}_1+k_2\vec{\alpha}_2+\cdots+k_s\vec{\alpha}_s \mid k_i \in \mathbb{K}, i=1,2,\cdots,s\}
+```
+
+研究 $\mathbf{W}$ 的结构, 任取 $\vec{\alpha},\vec{\gamma} \in \mathbf{W}$ 设
+```math
+\vec{\alpha}=a_1\vec{\alpha}_1+a_2\vec{\alpha}_2+\cdots+a_s\vec{\alpha}_s=b_1\vec{\alpha}_1+b_2\vec{\alpha}_2+\cdots+b_s\vec{\alpha}_s
+```
+则:
+```math
+\vec{\alpha}+\vec{\gamma}+(a_1+b_1)\vec{\alpha}_1+(a_2+b_2)\vec{\alpha}_2+\cdots+(a_s+b_s)\vec{\alpha}_s \in \mathbf{W} \\
+k\vec{\alpha}=(ka_1)\vec{\alpha}_1+(ka_2)\vec{\alpha}_2+\cdots+(ka_s)\vec{\alpha}_s \in \mathbf{W}
+```
+
+其中 $k$ 是 $\mathbb{K}$ 中的任意数. 
+
+**定义 2** $\mathbb{K}^n$ 的一个非空子集 $\mathbf{U}$ 如果满足:
+* $\vec{\alpha}, \vec{\gamma} \in \mathbf{U} \Rightarrow \vec{\alpha}+\vec{\gamma} \in \mathbf{U}$
+* $\vec{\alpha} \in \mathbf{U}, k \in \mathbb{K} \Rightarrow k\vec{\alpha} \in \mathbf{U}$
+
+那么称 $\mathbf{U}$ 是 $\mathbb{K}^n$ 的一个**线性子空间**.
+
+$\{\vec{0}\}$ 是 $\mathbb{K}^n$ 的一个线性子空间, $\mathbb{K}^n$ 本身也是 $\mathbb{K}^n$ 的一个线性子空间. $\mathbb{K}^n$ 中 向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ 的所有线性组合组成的集合 $\mathbf{W}$ 是 $\mathbb{K}^n$ 的一个子空间, 称他为 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$, **生成(或张成)的子空间** 记作
+```math
+\langle\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s\rangle
+```
+
+**命题 1** 数域 $\mathbb{K}$ 上 n 元线性方程组 $x_1\vec{\alpha}_1+x_2\vec{\alpha}_2+\cdots+x_n\vec{\alpha}_n=\vec{\beta}$ 有解  
+$\Rightarrow$ $\vec{\beta}$ 可以由 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_n$ 线性标出  
+$\Rightarrow$ $\vec{\beta} \in \langle\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s\rangle$
+
+## 线性相关与线性无关向量组
+结合空间 $\mathbf{V}$ (由所有以原点为起点的向量组成) 中, 取定三个不共面的向量 $\vec{e}_1,\vec{e}_2,\vec{e}_3$, 则 $\mathbf{V}$ 中每一个向量 $\vec{a}$ 都可以由 $\vec{e}_1,\vec{e}_2,\vec{e}_3$ 唯一的线性表出:
+```math
+\vec{a}=a_1\vec{e}_1+a_2\vec{e}_2+a_3\vec{e}_3
+```
+
+从解析几何中, 我们知道:
+* $\vec{e}_1,\vec{e}_2,\vec{e}_3$ 共面的充分必要条件是有不全为0的实数 $k_1,k_2,k_3$ 使得
+```math
+k_1\vec{a}_1+k_2\vec{a}_2+k_3\vec{a}_3=\vec{0}
+```
+* $\vec{e}_1,\vec{e}_2,\vec{e}_3$ 不共面的充分必要条件是: 从
+```math
+k_1\vec{a}_1+k_2\vec{a}_2+k_3\vec{a}_3=\vec{0}
+```
+  可以推出 $k_1=0,k_2=0,k_3=0$
+
+**定义 1** $\mathbb{K}^n$ 中向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s (s\ge 1)$ 成为是线性相关的, 如果 $\mathbb{K}$ 中有不全为0的数 $k_1,\cdots,k_s$ 使得
+```math
+k_1\vec{\alpha}_1+\cdots+k_s\vec{\alpha}_s=\vec{0}
+```
+
+**定义 2** $\mathbb{K}^n$ 中向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s (s\ge 1)$ 如果不是线性相关的, 那么称为**线性无关**的. 即如果从
+```math
+k_1\vec{\alpha}_1+\cdots+k_s\vec{\alpha}_s=\vec{0}
+```
+可以推断出所有系数 $k_1,\cdots,k_s$ 全为 0, 那么称向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s$ 是线性无关的.
+
+根据定义 1/2 可以立刻得到:
+* 包含零向量的向量组一定线性相关(因为 $1\vec{0}+0\vec{\alpha}_2+\cdots+0\vec{\alpha}_s=0$)
+* 单个向量 $\vec{\alpha}$ 线性相关当且仅当 $\vec{\alpha}=\vec{0},k\neq0 \Leftrightarrow \vec{\alpha}=\vec{0}$; 从而单个向量 $\vec{\alpha}$ 线性无关当且仅当 $\vec{\alpha}\neq\vec{0}$
+* $\mathbb{K}^n$ 中, 向量组
+```math
+\vec{\epsilon}_1=\begin{bmatrix}
+    1 \\ 0 \\ 0 \\ \vdots \\ 0 \\ 0
+\end{bmatrix},\vec{\epsilon}_2=\begin{bmatrix}
+    0 \\ 1 \\ 0 \\ \vdots \\ 0 \\ 0
+\end{bmatrix},\cdots,\vec{\epsilon}_n=\begin{bmatrix}
+    0 \\ 0 \\ 0 \\ \vdots \\ 0 \\ 1
+\end{bmatrix}
+```
+是线性无关的(因为从 $k_1\vec{\epsilon}_1+k_2\vec{\epsilon}_2+\cdots+k_n\vec{\epsilon}_n=\vec{0}$ 可得出 $k_1=k_2=\cdots=k_n=0$)
+
+<!-- 几个角度来考察线性相关的向量组与线性无关的向量组的本质区别:
+* 从线性组合角度看:
+  向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s(s\ge 1)$ 线性相关  
+  $\Leftrightarrow$ 它们有系数不全为0的线性组合等于零向量;
+
+  向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s(s\ge 1)$ 线性无关  
+  $\Leftrightarrow$ 他们只有系数全为0的线性组合才会等于零向量.
+  
+* 从线性表出看:
+  向量组 $\vec{\alpha}_1, \vec{\alpha}_2,\cdots,\vec{\alpha}_s(s\ge 2)$ 线性相关  
+  $\Leftrightarrow$ 其中至少有一个向量可以有其余向量线性表出
+ -->
+
+**命题 1** 设向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s$ 线性无关, 则向量 $\vec{\beta}$ 可以由 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s$ 线性表出的充分必要条件是: $\vec{\alpha}_1,\cdots,\vec{\alpha}_s,\vec{\beta}$ 线性相关.
+
+**推论 1** 设向量组 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s$ 线性无关, 则向量 $\vec{\beta}$ 不能由 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s$ 线性表出的充分必要条件是 $\vec{\alpha}_1,\cdots,\vec{\alpha}_s,\vec{\beta}$ 线性无关.
+
+## 向量的秩
+**定义 1** 向量组的一个部分组成为一个**极大线性无关组**, 如果这个部分本身是线性无关的, 但是从这个向量组的其余向量(如果还有的话)中任取一个添进去, 得到的新的部分组都线性相关.
+
+**定义 2** 如果向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 的每一个向量都可以由向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 线性表出, 那么称向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 可以由向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 线性表出.如果向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 与向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 可以互相线性表出, 那么称向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 与向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 等价, 记作:
+```math
+\{\vec{\alpha},\cdots,\vec{\alpha}_s\} \cong \{\vec{\beta},\cdots,\vec{\beta}_r\}
+```
+向量组的等价是向量组之间的一种关系. 可以证明, 这种关系具有下述三种性质:
+* 反身性. 即任何一个向量组都与自身等价
+* 对称性. 即如果 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 与 $\vec{\beta},\cdots,\vec{\beta}_r$ 等价, 那么 $\vec{\beta},\cdots,\vec{\beta}_r$ 与 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 等价
+* 传递性. 即如果
+```math
+\{\vec{\alpha},\cdots,\vec{\alpha}_s\} \cong \{\vec{\beta},\cdots,\vec{\beta}_r\},\{\vec{\beta},\cdots,\vec{\beta}_r\} \cong \{\vec{\gamma},\cdots,\vec{\gamma}_t\}
+```
+那么
+```math
+\{\vec{\alpha},\cdots,\vec{\alpha}_s\} \cong \{\vec{\gamma},\cdots,\vec{\gamma}_t\}
+```
+
+关于传递性, 只需证明线性表出有传递性: 设 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 可以由 $\vec{\beta},\cdots,\vec{\beta}_r$ 线性表出:
+```math
+\vec{\alpha}_i=\sum_{j=1}^r b_{ij}\vec{\beta}_j, j=1,\cdots,s
+```
+且 $\vec{\beta},\cdots,\vec{\beta}_r$ 可以由 $\vec{\gamma},\cdots,\vec{\gamma}_t$ 线性表出:
+```math
+\vec{\beta}_j=\sum_{l=1}^t c_{jl}\vec{\gamma}_l, j=1,\cdots,s
+```
+则:
+```math
+\vec{\alpha}_i=\sum_{j=1}^r b_{ij}(\sum_{l=1}^t c_{jl}\vec{\gamma}_l)=\sum_{j=1}^r (\sum_{l=1}^t b_{ij}c_{jl})\vec{\gamma}_l, i=1,\cdots,s
+```
+即 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 可以由 $\vec{\gamma},\cdots,\vec{\gamma}_t$ 线性表出
+
+**推论 1** 向量组的任意两个极大线性无关组等价
+
+**推论 2** $\vec{\beta}$ 可以由向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 线性表出当且仅当 $\vec{\beta}$ 可以由 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 的一个极大线性无关组线性表出.
+
+**引理 1** 设向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 可以由向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 线性表出, 如果 $r\gt s$, 那么 $\vec{\beta},\cdots,\vec{\beta}_r$ 线性相关.
+
+**推论 3** 设向量组 $\vec{\beta},\cdots,\vec{\beta}_r$ 可以由向量组 $\vec{\alpha},\cdots,\vec{\alpha}_s$ 线性表出, 如果 $\vec{\beta},\cdots,\vec{\beta}_r$ 线性无关, 那么 $r \le s$
+
+**推论 4** 等价的线性无关向量组所含向量的个数相等.
+
+**推论 5** 向量组的任意两个极大线性无关组所含向量的个数相等.
+
+**定义 3** 向量组的极大线性无关组所含向量的个数称为这个**向量组的秩**. 
+
+全由零向量组成的向量组的秩规定为 0
+
+向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ 的秩记作 $\mathrm{rank}\{\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s\}$
+
+**命题 2** 向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ 线性无关的充分必要条件是它的秩等于它所含向量的个数.
+
+**命题 3** 如果向量组(I)可以由向量组(II)线性表出, 那么:
+```math
+(I) 的秩 \le (II) 的秩
+```
+
+**命题 4** 等价的向量组有相等的秩
+
+## 子空间的基与维数
+**定义 1** 设 $\mathbf{U}$ 是 $\mathbb{K}^n$ 的一个子空间, 如果 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r \in \mathbf{U}$, 并且满足下述两个条件:
+* $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r$ 线性无关
+* $\mathbf{U}$ 中每一个向量都可以由 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r$ 线性表出
+
+那么称 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r$ 是 $\mathbf{U}$ 的一个基.
+
+** 定理 1** $\mathbb{K}^n$ 的任一非零子空间 $\mathbf{U}$ 都有一个基.
+
+**定理 2** $\mathbb{K}^n$ 的非零子空间 $\mathbf{U}$ 的任意两个基所含向量的个数相等.
+
+**定义 2** $\mathbb{K}^n$ 的非零子空间 $\mathbf{U}$ 的一个基所含向量的个数称为 $\mathbf{U}$ 的维数, 记作 $\dim_K \mathbf{U}$ 或 $\dim \mathbf{U}$
+
+**命题 1** 设 $\dim \mathbf{U}=r$, 则 $\mathbf{U}$ 中任意 $r+1$ 个向量都线性相关.
+
+**命题 2** 设 $\dim \mathbf{U}=r$, 则 $\mathbf{U}$ 中任意 $r$ 个线性无关的向量都是 $\dim \mathbf{U}=r$ 的一个基.
+
+**命题 3** 设 $\dim \mathbf{U}=r$, 设 $\vec{\alpha},\cdots,\vec{\alpha}_r \in \mathbf{U}$. 如果 $\mathbf{U}$ 中每一个向量都可以由 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r$ 线性表出, 那么 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_r$ 是 $\mathbf{U}$ 的一个基.
+
+**命题 4 设 $\dim \mathbf{U}$ 和 $\dim \mathbf{W}$ 都是 $\mathbb{K}^n$ 的非零子空间, 如果 $\mathbf{U} \subseteq \mathbf{W}$ 那么
+```math
+\dim \mathbf{U} \le \dim \mathbf{W}
+```
+
+**命题 5** 设 $\dim \mathbf{U}$ 和 $\dim \mathbf{W}$ 都是 $\mathbb{K}^n$ 的非零子空间, 且 $\mathbf{U} \subseteq \mathbf{W}$ 如果 $\dim \mathbf{U} = \dim \mathbf{W}$ 那么 $\mathbf{U}=\mathbf{W}$
+
+**定理 3** 向量组 $\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s$ 的一个极大线性无关组是这个向量组生成的子空间 $\langle \vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s\rangle$ 的一个基, 从而
+```math
+\dim \vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s = \mathrm{rank} \{\vec{\alpha}_1,\vec{\alpha}_2,\cdots,\vec{\alpha}_s\} 
+```
+
