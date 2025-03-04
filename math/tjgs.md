@@ -199,7 +199,7 @@ x_n\to a(n \to \infty)
 ```
 
 ### 收敛数列的性质
-**定理 1(极限的唯一性)** 如果数列 $\{\x_n}$ 收敛, 那么它的极限唯一.
+**定理 1(极限的唯一性)** 如果数列 $\{x_n}$ 收敛, 那么它的极限唯一.
 
 **定理 2(收敛数列的有界性)** 如果数列 $\{x_n\}$ 收敛, 那么数列 $\{x_n\}$ 一定有界. 
 
@@ -242,4 +242,4 @@ x_n\to a(n \to \infty)
 
 **定理 3(函数极限的局部保号性)** 如果 $\displaystyle\lim_{x\to x_0}f(x)=A$, 其 $A\gt 0$(或 $A\lt 0$) 那么存在常数 $\delta \gt 0$, 使得当 $0\lt|x-x_0|\lt\delta$ 时, 有 $f(x)\gt 0$(或 $f(x)\lt 0$).
 
-* **定理 4(函数极限与数列极限的关系)** 如果极限 $\displaystyle\lim_{x\to x_0}f(x)$ 存在, $\{x_n\}$ 为函数 $f(x)$ 的定义域内任一收敛于 $x_0$ 的数列, 且满足 $x_n \neq n_0(n)(n\in \mathbb{N}_+)$, 那么相应的函数值数列 $\{f(x_n)\}$ 必收敛, 且 $\displaystyle\lim_{x\to\infty}f(x_n)=\lim_{x\to x_0}f(x)$
+* **定理 4(函数极限与数列极限的关系)** 如果极限 $\displaystyle\lim_{x\to x_0}f(x)$ 存在, $\{x_n\}$ 为函数 $f(x)$ 的定义域内任一收敛于 $x_0$ 的数列, 且满足 $x_n \neq n_0(n)(n\in \mathbb{N}_+)$, 那么相应的函数值数列 $\{ f(x_n) \}$ 必收敛, 且 $\displaystyle \lim_{x\to\infty}f(x_n)=\lim_{x\to x_0}f(x)$
