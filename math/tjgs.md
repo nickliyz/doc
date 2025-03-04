@@ -52,7 +52,7 @@ y=f(x), x\in \mathbf{D}
 其中 x 称为**自变量**, y 称为**因变量**, D 称为**定义域**, 记作 $D_f$, 即 $D_f=D$.
 
 #### 函数的几种特性
-1) **函数的有界性** 设函数 $f(x)$ 的定义域为 D, 数集 $X\in\mathbf{D}$ 如果存在数$K_1$ 使得
+1) **函数的有界性** 设函数 $f(x)$ 的定义域为 D, 数集 $X\in\mathbf{D}$ 如果存在数 $K_1$ 使得
 ```math
 f(x) \le K_1
 ```
@@ -116,22 +116,22 @@ y=\sqrt{1-x^2}, y=\sin^2x,y=\sqrt{\cot \frac{x}{2}}
 等都是初等函数.
 
 应用上常遇到以 $\mathrm{e}$ 为底的指数函数 $y=\mathrm{e}^x$ 和 $y=\mathrm{e}^{-x}$ 所产生的双曲函数以及它们的反函数:反双曲函数, 它们的定义如下:
-* 双曲正弦: $\displaystyle\sh x = \frac{e^x-e^{-x}}{2}$
-* 双曲余弦: $\displaystyle\ch x = \frac{e^x+e^{-x}}{2}$
-* 双曲正切: $\displaystyle\th x = \frac{\sh x}{\ch x} = \frac{e^x-e^{-x}}{e^x+e^{-x}}$
+* 双曲正弦: $\displaystyle\mathrm{sh} x = \frac{e^x-e^{-x}}{2}$
+* 双曲余弦: $\displaystyle\mathrm{ch} x = \frac{e^x+e^{-x}}{2}$
+* 双曲正切: $\displaystyle\mathrm{th} x = \frac{\mathrm{sh} x}{\mathrm{ch} x} = \frac{e^x-e^{-x}}{e^x+e^{-x}}$
 
 根据双曲函数的定义, 可证如下四个公式:
-* $\sh (x + y) = \sh x \ch y + \ch x \sh y$
-* $\sh (x - y) = \sh x \ch y - \ch x \sh y$
-* $\ch (x + y) = \ch x \ch y + \sh x \sh y$
-* $\ch (x - y) = \ch x \ch y - \sh x \sh y$
+* $\mathrm{sh} (x + y) = \mathrm{sh} x \mathrm{ch} y + \mathrm{ch} x \mathrm{sh} y$
+* $\mathrm{sh} (x - y) = \mathrm{sh} x \mathrm{ch} y - \mathrm{ch} x \mathrm{sh} y$
+* $\mathrm{ch} (x + y) = \mathrm{ch} x \mathrm{ch} y + \mathrm{sh} x \mathrm{sh} y$
+* $\mathrm{ch} (x - y) = \mathrm{ch} x \mathrm{ch} y - \mathrm{sh} x \mathrm{sh} y$
 
-双曲函数 $y=\sh x, y=\ch x(x\ge0),y=\th x$ 的反函数依次记为:
+双曲函数 $y=\mathrm{sh} x, y=\mathrm{ch} x(x\ge0),y=\mathrm{th} x$ 的反函数依次记为:
 * 反双曲正弦: $y=\mathrm{arsh} x$
 * 反双曲余弦: $y=\mathrm{arch} x$
 * 反双曲正切: $y=\nathrm{arth} x$
 
-先讨论双曲正弦 $y=\sh x$ 的反函数. 由 $x=\sh y$ 有
+先讨论双曲正弦 $y=\mathrm{sh} x$ 的反函数. 由 $x=\mathrm{sh} y$ 有
 ```math
 x=\frac{e^y-e^{-y}}{2}
 ```
@@ -193,9 +193,9 @@ x_n=f(n),n\in \mathbb{N}_+
 x_n\to a(n \to \infty)
 ```
 
-为了表达方便, 引入记号 "$\forall$" 表示 "对于任意给定的" 或 "对于每一个(`\forall`)", 记号 "$\exist$" 表示 "存在"(`\exist`). 于是, "对于任意给定的 $\epsilon \gt 0$"写成: "$\forall\epsilon\gt 0$", "存在正整数 $N$" 写成 "$\exist正整数N$", 数列极限 $\displaystyle\lim_{n\to\infty}x_n=a$ 的定义可表达为:
+为了表达方便, 引入记号 "$\forall$" 表示 "对于任意给定的" 或 "对于每一个(`\forall`)", 记号 "$\exists$" 表示 "存在"(`\exists`). 于是, "对于任意给定的 $\epsilon \gt 0$"写成: "$\forall\epsilon\gt 0$", "存在正整数 $N$" 写成 "$\exists正整数N$", 数列极限 $\displaystyle\lim_{n\to\infty}x_n=a$ 的定义可表达为:
 ```math
-\lim_{n\to\infty}x_n=a \Leftrightarrow \forall\epsilon\gt 0, \exist 正整数 N, 当 n \gt N 时, 有 |x_n-a|\le\epsilon
+\lim_{n\to\infty}x_n=a \Leftrightarrow \forall\epsilon\gt 0, \exists 正整数 N, 当 n \gt N 时, 有 |x_n-a|\le\epsilon
 ```
 
 ### 收敛数列的性质
@@ -232,7 +232,7 @@ x_n\to a(n \to \infty)
 ```
 定义2 可简单地表达为:
 ```math
-\lim_{x\to\infty}f(x)=A\Leftrightarrow \forall\epsilon\lt 0,\exist X \gt 0, 当 |x|\gt X 时, 有 |f(x)-A|\lt\epsilon
+\lim_{x\to\infty}f(x)=A\Leftrightarrow \forall\epsilon\lt 0,\exists X \gt 0, 当 |x|\gt X 时, 有 |f(x)-A|\lt\epsilon
 ```
 
 ### 函数极限的性质
