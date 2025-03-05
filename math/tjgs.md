@@ -245,7 +245,7 @@ x_n\to a(n \to \infty)
 
 **定理 3(函数极限的局部保号性)** 如果 $\displaystyle\lim_{x\to x_0}f(x)=A$, 其 $A\gt 0$(或 $A\lt 0$) 那么存在常数 $\delta \gt 0$, 使得当 $0\lt|x-x_0|\lt\delta$ 时, 有 $f(x)\gt 0$(或 $f(x)\lt 0$).
 
-**定理 4(函数极限与数列极限的关系)** 如果极限 $\displaystyle\lim_{x\to x_0}f(x)$ 存在, $\{ x_n \}$ 为函数 $f(x)$ 的定义域内任一收敛于 $x_0$ 的数列, 且满足 $x_n \neq x_0 (n\in\mathbb{N}_+)$, 那么相应的函数值数列 $\{f(x_n)\}$ 必收敛, 且 $\displaystyle \lim_{x\to\infty}f(x_n)=\lim_{x\to x_0}f(x)$
+**定理 4(函数极限与数列极限的关系)** 如果极限 $\displaystyle\lim_{x\to x_0}f(x)$ 存在, $\{ x_n \}$ 为函数 $f(x)$ 的定义域内任一收敛于 $x_0$ 的数列, 且满足 $x_n \neq x_0 (n \in \mathbb{N}_{+})$, 那么相应的函数值数列 $\{f(x_n)\}$ 必收敛, 且 $\displaystyle \lim_{x\to \infty}f(x_n)=\lim_{x\to x_0}f(x)$
 
 ## 无穷小与无穷大
 ### 无穷小
@@ -256,7 +256,7 @@ x_n\to a(n \to \infty)
 ### 无穷大
 **定义 2** 设函数 $f(x)$ 在 $x_0$ 的某一去心邻域内有定义(或 $|x|$ 大于某一正数时有定义). 如果对于任意给定的正数 $M$ (无论它多么大), 总存在正数 $\delta$ (或正数 $X$), 只要 $x$ 适合不等式 $0\lt|x-x_0|\lt \delta$ ,对应的函数值 $f(x)$ 总满足不等式
 $$
-|f(x)|\gt M
+|f(x)| \gt M
 $$
 那么称函数 $f(x)$ 是当 $x\to x_0$ (或 $x\to\infty$) 时的无穷大.
 
