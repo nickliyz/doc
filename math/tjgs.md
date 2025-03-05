@@ -196,7 +196,7 @@ x_n=f(n),n\in \mathbb{N}_+
 x_n\to a(n \to \infty)
 ```
 
-为了表达方便, 引入记号 " $\forall$ " 表示 "对于任意给定的" 或 "对于每一个(`\forall`)", 记号 " $\exists$ " 表示 "存在"(`\exists`). 于是, "对于任意给定的 $\epsilon \gt 0$"写成: " $\forall\epsilon\gt 0$ ", " 存在正整数 $N$ " 写成 " $\exists正整数N$ ", 数列极限 $\displaystyle\lim_{n\to\infty}x_n=a$ 的定义可表达为:
+为了表达方便, 引入记号 " $\forall$ " 表示 "对于任意给定的" 或 "对于每一个", 记号 " $\exists$ " 表示 "存在". 于是, "对于任意给定的 $\epsilon \gt 0$"写成: " $\forall\epsilon\gt 0$ ", " 存在正整数 $N$ " 写成 " $\exists正整数N$ ", 数列极限 $\displaystyle\lim_{n\to\infty}x_n=a$ 的定义可表达为:
 ```math
 \lim_{n\to\infty}x_n=a \Leftrightarrow \forall\epsilon\gt 0, \exists 正整数 N, 当 n \gt N 时, 有 |x_n-a|\le\epsilon
 ```
