@@ -19,6 +19,39 @@
   - [无穷小与无穷大](#无穷小与无穷大)
     - [无穷小](#无穷小)
     - [无穷大](#无穷大)
+  - [极限运算法则](#极限运算法则)
+  - [极限存在准则 两个重要极限](#极限存在准则-两个重要极限)
+  - [无穷小的比较](#无穷小的比较)
+  - [函数的连续性与间断点](#函数的连续性与间断点)
+    - [函数的连续性](#函数的连续性)
+    - [函数的间断点](#函数的间断点)
+  - [连续函数的运算与初等函数的连续性](#连续函数的运算与初等函数的连续性)
+    - [连续函数的和/差/积/商的连续性](#连续函数的和差积商的连续性)
+  - [初等函数的连续性](#初等函数的连续性)
+  - [闭区间上连续函数的性质](#闭区间上连续函数的性质)
+    - [有界性与最大值最小值定理](#有界性与最大值最小值定理)
+    - [零点定理与介值定理](#零点定理与介值定理)
+    - [一致连续性](#一致连续性)
+- [导数与微分](#导数与微分)
+  - [导数概念](#导数概念)
+    - [引例](#引例)
+      - [直线运动加速度](#直线运动加速度)
+      - [切线问题](#切线问题)
+    - [导数的定义](#导数的定义)
+      - [函数在一点处的导数与导函数](#函数在一点处的导数与导函数)
+      - [求导数函数举例](#求导数函数举例)
+      - [单侧导数](#单侧导数)
+    - [导数的几何意义](#导数的几何意义)
+    - [函数可导性与连续性的关系](#函数可导性与连续性的关系)
+  - [函数的求导法则](#函数的求导法则)
+    - [函数的和/差/积/商的求导法则](#函数的和差积商的求导法则)
+    - [反函数求导法则](#反函数求导法则)
+    - [复合函数求导法则](#复合函数求导法则)
+    - [基本求导法则与求导公式](#基本求导法则与求导公式)
+      - [常数和基本初等函数的导数公式](#常数和基本初等函数的导数公式)
+      - [函数的和/差/积/商的求导法则](#函数的和差积商的求导法则-1)
+      - [反函数求导法则](#反函数求导法则-1)
+      - [复合函数求导法则](#复合函数求导法则-1)
 
 
 # 函数与极限
@@ -262,3 +295,338 @@ x_n\to a(n \to \infty)
 
 **定理 2** 在自变量的同一变化过程中, 如果 $f(x)$ 为无穷大, 那么 $\displaystyle\frac{1}{f(x)}$ 为去穷小; 反之, 如果 $f(x)$ 为无穷小, 且 $f(x)\neq 0$, 那么 $\displaystyle\frac{1}{f(x)}$ 为无穷大.
 
+## 极限运算法则
+**定理 1** 两个无穷小的和是无穷小.
+
+**定理 2** 有界无穷小与无穷小的积是无穷小.
+
+**推论 1** 常数与无穷小的乘积是无穷小.
+
+**推论 2** 有限个无穷小的乘积是无穷小.
+
+**定理 3** 如果 $\lim f(x)=A, \lim g(x)=B$, 那么
+* $\lim[f(x)\pm g(x)]=\lim f(x) \pm \lim g(x)$
+* $\lim[f(x)\cdot g(x)]=\lim f(x) \cdot \lim g(x)$
+* 若又有 $B \neq 0$, 则
+```math
+\lim \frac{f(x)}{g(x)}=\frac{\lim f(x)}{\lim g(x)} = \frac{A}{B}
+```
+
+**推论 1** 如果 $\lim f(x)$ 存在, 而 $c$ 为常数, 那么
+```math
+\lim[cf(x)]=c\lim f(x)
+```
+
+**推论 2** 如果 $\lim f(x)$ 存在, 而 $n$ 是正整数, 那么
+```math
+\lim[f(x)]^n=[\lim f(x)]^n
+```
+
+**定理 4** 设有数列 $\{x_n\}$ 和 $\{y_n\}$. 如果
+```math
+\lim_{x\to\infty}x_n = A, \lim_{n\to\infty}y_n = B
+```
+那么:
+* $\displaystyle \lim_{n\to\infty}x_n \pm y_n = A + B$
+* $\displaystyle \lim_{n\to\infty}x_n \cdot y_n = A \cdot B$
+* 当 $y_n\neq 0(n = 1,2,\cdots)$ 且 $B\neq 0$ 时, $\displaystyle\lim_{n\to\infty}\frac{x_n}{y_n} = \frac{A}{B}$
+
+**定理 5** 如果 $\varphi(x)\ge\psi(x)$, 而 $\lim\varphi(x) = A, \lim\psi(x) = B$, 那么 $A\ge B$.
+
+**定理 6(复合函数的极限运算法则)** 设函数 $y=f[g(x)]$ 是由函数 $u=g(x)$ 与 函数 $y=f(u)$ 复合而成, $f[g(x)]$ 在点 $x_0$ 的某去心邻域内有定义, 若 $\displaystyle\lim_{x\to x_0}g(x)=u_0, \lim_{u\to u_0}f(u) = A$,
+且存在 $\delta_0 \gt 0$, 当 $x \in \mathring{U}(x_0,\delta_0)$ 时, 有 $g(x)\neq u_0$ 则
+```math
+\lim_{x\to x_0}f[g(x)] = \lim_{u\to u_0}f(u) = A
+```
+
+## 极限存在准则 两个重要极限
+**准则 I** 如果数列 $\{x_n\}, \{y_n\}$ 及 $\{z_n\}$ 满足下列条件:
+* 从某项起, 即 $\exists n_0 \in N_+$, 当 $n\gt n_0$ 时,有:
+```math
+y_n \le x_n \le z_n
+```
+* $\displaystyle\lim_{n\to\infty} y_n = a, \lim_{n\to\infty} x_n = a$
+
+那么数列 $\{x_n\}$ 的极限存在, 且 $\lim_{n\to\infty}x_n = a$
+
+**准则 I'** 如果
+* 当 $x\in \mathring{U}(x_0,r)$ (或 $|x| \gt M$) 时,
+```math
+g(x) \le f(x) \le h(x)
+```
+* $\displaystyle\lim_{\substack{x\to x_0 \\ (x\to\infty)}}g(x) = A, \lim_{\substack{x\to x_0 \\ (x\to\infty)}}h(x) = A$
+
+那么 $\displaystyle\lim_{\substack{x\to x_0 \\ (x\to\infty)}}f(x)$ 存在, 且等于 $A$
+
+准则 I 及 准则 I' 称为 **夹逼准则**
+
+**准则 II** 单调有界数列必有极限.
+
+**准则 II'** 设函数 $f(x)$ 在点 $x_0$ 某个左邻域内单调并有界, 则 $f(x)$ 在 $x_0$ 的左极限 $f(x_0^-)$ 必定存在.
+
+**柯西(Cauchy) 极限存在法则** 数列 $\{x_n\}$ 收敛的充分必要条件是: 对于任意给定的正整数 $\epsilon$, 存在正整数 $N$ 使得当 $m\gt N, n \gt N$ 时, 有
+```math
+|x_n - x_m| \le \epsilon
+```
+
+## 无穷小的比较
+**定义**
+
+如果 $\displaystyle\lim \frac{\beta}{\alpha} = 0$, 那么就说 $\beta$ 是比 $\alpha$ 的**高阶无穷小**, 记作 $\beta=o(\alpha)$
+
+如果 $\displaystyle\lim \frac{\beta}{\alpha} = \infty$, 那么就说 $\beta$ 是比 $\alpha$ 的**低阶无穷小**;
+
+如果 $\displaystyle\lim \frac{\beta}{\alpha} = c \neq 0$, 那么就说 $\beta$ 与 $\alpha$ 是**同阶无穷小**;
+
+如果 $\displaystyle\lim \frac{\beta}{\alpha^k} = c \neq 0$, 那么就说 那么就说 $\beta$ 是关于 $\alpha$ 的**k阶无穷小**;
+
+如果 $\displaystyle\lim \frac{\beta}{\alpha} = 1$, 那么就说 $\beta$ 与 $\alpha$ 是**等价无穷小**, 记作 $\alpha \sim \beta$;
+
+**定理 1** $\beta$ 与 $\alpha$ 是等价无穷小的充分必要条件为
+```math
+\beta = \alpha + o(\alpha)
+```
+
+**定理 2** 设 $\alpha \sim \widetilde{a}, \beta \sim \widetilde{\beta}$, 且 $\displaystyle\frac{\widetilde{\beta}}{\widetilde{\alpha}}$ 存在, 则
+```math
+\lim \frac{\beta}{\alpha} = \lim \frac{\widetilde{\beta}}{\widetilde{\alpha}}
+```
+
+## 函数的连续性与间断点
+### 函数的连续性
+**定义** 设函数 $y = f(x)$ 在点 $x_0$ 的某一去心邻域内有定义, 如果
+```math
+\lim_{\Delta x\to 0}\Delta y = \lim_{\Delta x\to 0}[f(x_0+\Delta x)-f(x_0)] = 0
+```
+那么就称函数 $y = f(x)$ 在点 $x_0$ 连续.
+
+设函数 $y = f(x)$ 在点 $x_0$ 的某一去心邻域内有定义, 如果
+```math
+\lim_{x\to x_0}f(x) = f(x_0)
+```
+
+定义用 " $\epsilon-\delta$ " 语言表达如下:  
+$f(x)$ 在 $x_0$ 连续 $\Leftrightarrow \forall \epsilon \gt 0, \exists \delta \gt 0$ 当 $|x-x_0| \lt \delta$ 时, 有 $|f(x)-f(x_0)| \lt \epsilon$
+
+如果 $\lim_{x\to x_0}f(x) = f(x_0^-)$ 存在, 且等于 $f(x_0)$, 即
+```math
+f(x_0^-) = f(x_0)
+```
+那么就说函数 $f(x)$ 在点 $x_0$ **左连续**. 如果 $\lim_{x\to x_0}f(x) = f(x_0^+)$ 存在, 且等于 $f(x_0)$, 即
+```math
+f(x_0^+) = f(x_0)
+```
+那么就说函数 $f(x)$ 在点 $x_0$ **右连续**.
+
+在区间上每一点都连续的函数, 叫做**在该区间上的连续函数**, 或**函数在该区间上连续**.
+
+### 函数的间断点
+设函数 $y = f(x)$ 在点 $x_0$ 的某一去心邻域内有定义, 如果函数 $f(x)$ 有下列三种情况之一:
+* 在 $x=x_0$ 没有定义
+* 虽在 $x=x_0$ 有定义, 但 $\displaystyle\lim_{x\to x_0}f(x)$ 不存在
+* 虽然在 $x=x_0$ 有定义, 且 $\displaystyle\lim_{x\to x_0}f(x)$ 存在, 但 $\displaystyle\lim_{x\to x_0}f(x) \neq f(x_0)$
+
+那么 $f(x)$ 在点 $x_0$ 为不连续, 而点 $x_0$ 称为函数 $f(x)$ 的**不连续点**或**间断点**
+
+左极限 $f(x_0^-)$ 与右极限 $f(x_0^+)$ 都都存在, 但不相等, 称 $x_0$ 是函数 $f(x_0)$ 的**第一类间断点**, 不是第一类间断点的任何间断点都称为 **第二类间断点**.
+
+## 连续函数的运算与初等函数的连续性
+### 连续函数的和/差/积/商的连续性
+
+**定理 1** 设函数 $f(x)$ 和 $g(x)$ 在点 $x_0$ 连续, 则它们的和(差) $f\pm g$ / 积 $f\cdot g$ 及商 $\displaystyle\frac{f}{g}$ (当 $g(x_0) \neq 0$ 时)都在点 $x_0$ 连续.
+
+**定理 2** 如果函数 $y=f(x)$ 在区间 $I_x$ 上单调增加(或单调减少)且连续, 那么它的反函数 $x=f^{-1}(y)$ 也在对应的区间 $I_y=\{y\mid y=f(x),x\in I_x\}$ 上单调增加(或单调减少)且连续.
+
+**定理 3** 设函数 $y=f[g(x)]$ 由函数 $u=g(x)$ 与函数 $y=f(u)$ 复合而成, $\mathring{U}(x_0) \subset D_{f\cdot g}$. 若 $\displaystyle\lim_{x\to x_0}g(x)=u_0$, 而函数 $y=f(u)$ 在 $u=u_0$ 连续, 则
+```math
+\lim_{x\to x_0}f[g(x)] = \lim_{u\to u_0}f(u) = f(u_0)
+```
+
+**定理 4** 设函数 $y=f[g(x)]$ 由函数 $u=g(x)$ 与函数 $y=f(u)$ 复合而成, $\mathring{U}(x_0) \subset D_{f\cdot g}$. 若 $\displaystyle\lim_{x\to x_0}g(x)=u_0$, 而函数 $y=f(u)$ 在 $u=u_0$ 连续, 则复合函数 $y=f[g(x)]$ 在 $x=x_0$ 也连续.
+
+## 初等函数的连续性
+基本初等函数在它们的定义域内都是连续的.
+
+一切函数在其定义区间内都是连续的.
+
+## 闭区间上连续函数的性质
+### 有界性与最大值最小值定理
+**定理 1(有界性与最大值最小值定理)** 在闭区间上连续的函数在该区间上有界且一定能取得它的最大值和最小值.
+
+### 零点定理与介值定理
+如果 $x_0$ 使 $f(x_0) = 0$, 那么 $x_0$ 称为函数 $f(x)$ 的零点.
+
+**定理 2(零点定理)** 设函数 $f(x)$ 在闭区间 $[a,b]$ 上连续, 且 $f(a)$ 与 $f(b)$ 异号(即 $f(a)\cdot f(b) \lt  0$), 则在开区间 $(a,b)$ 内至少有一点 $\xi$, 使
+```math
+f(\xi) = 0
+```
+
+**定理 3(介值定理)** 设函数 $f(x)$ 在闭区间 $[a,b]$ 上连续, 且在这区间的端点取不同的函数值
+```math
+f(a) = A\ \ \ 及\ \ \ f(b) = B
+```
+则对于 $A$ 与 $B$ 之间的任意一个数 $C$, 在开区间 $(a,b)$ 内至少一点 $\xi$, 使得
+```math
+f(\xi) = C (a \lt \xi \lt b)
+```
+
+**推论** 在闭区间 $[a,b]$ 上连续的函数 $f(x)$ 的值域为闭区间 $[m,M]$, 其中 $m$ 与 $M$ 依次为 $f(x)$ 在 $[a,b]$ 上的最小值与最大值.
+
+### 一致连续性
+**定义** 设函数 $f(x)$ 在区间 $I$ 上有定义. 如果对于任意给定的正整数 $\epsilon$, 总存在正数 $\delta$, 使得对于区间 $I$ 上的任意点 $x_1,x_2$, 当 $|x_1-x_2|\lt \delta$ 时, 有
+```math
+|f(x_1) - f(x_2)| \le \epsilon
+```
+
+那么称函数 $f(x)$ 在区间 $I$ 上一致连续.
+
+**定理 4(一致连续性)** 如果函数 $f(x)$ 在闭区间 $[a,b]$ 上连续, 那么它在该区间上一致连续.
+
+# 导数与微分
+## 导数概念
+### 引例
+#### 直线运动加速度
+时间 $t$, 位置 $s$, 有
+```math
+s = f(t)
+```
+平均速度:
+```math
+\frac{s-s_0}{t-t_0} = \frac{f(t) - f(t_0)}{t - t_0}
+```
+在 $t_0$ 时刻的速度:
+```math
+v = \lim_{t\to t_0}\frac{f(t) - f(t_0)}{t - t_0}
+```
+
+#### 切线问题
+```math
+k = \lim_{x\to x_0}\frac{f(x) - f(x_0)}{x-x_0}
+```
+$k$ 是切线的斜率.
+
+### 导数的定义
+#### 函数在一点处的导数与导函数
+**定义** 设函数 $y=f(x)$ 在点 $x_0$ 的某个去心邻域内有定义, 当自变量 $x$ 在 $x_0$ 处取得增量 $\Delta x$ (点 $x_0+\Delta x$ 仍在该邻域内) 时, 相应地, 因变量取得增量 $\Delta y=f(x_0+\Delta x) - f(x_0)$; 如果 $\Delta y$ 与 $\Delta x$ 之比当 $\Delta \to 0$ 时的极限存在, 那么称函数 $y = f(x)$ 在 $x_0$ 处可导, 并称这个极限为函数 $y = f(x)$ 在点 $x_0$ 处的导数, 记为 $f'(x_0)$,即
+```math
+f'(x_0)=\lim_{\Delta x \to 0}\frac{\Delta y}{\Delta x} = \lim_{\Delta x \to 0}\frac{f(_0+\Delta x)-f(x_0)}{\Delta x}
+```
+也可记作 $\displaystyle y'\mid_{x=x_0}, \frac{\mathrm{d}y}{\mathrm{d}x}\mid_{x=x_0}$ 或 $\frac{\mathrm{d}f(x)}{\mathrm{d}x}\mid_{x=x_0}$
+
+#### 求导数函数举例
+略
+
+#### 单侧导数
+根据函数 $f(x)$ 在点 $x_0$ 处的导数 $f'(x_0)$ 的定义, 导数
+```math
+f'(x_0) = \lim_{h\to0}\frac{f(x_0+h)-f(x_0)}{h}
+```
+是一个极限, 而极限存在的充分必要条件是左/右极限都存在且相等, 因此 $f'(x_0) 存在即 $f(x)$ 在点 $x_0$ 处可导的充分必要条件是左/右极限
+```math
+\lim_{h\to0^-}\frac{f(x_0+h)-f(x_0)}{h}\ \ \ 及\ \ \ \lim_{h\to0^+}\frac{f(x_0+h)-f(x_0)}{h}
+```
+都存在且相等. 这两个极限分别称为函数 $f(x)$ 在点 $x_0$ 处的**左导数** 和**右导数**, 记作 
+```math
+\displaystyle f_-'(x_0) = \lim_{h\to0^-}\frac{f(x_0+h)-f(x_0)}{h}
+```
+```math
+\displaystyle f_+'(x_0) = \lim_{h\to0^+}\frac{f(x_0+h)-f(x_0)}{h}
+```
+
+左导数和右导数统称为单侧导数.
+
+如果 $f(x)$ 在开区间 $(a,b)$ 内可导, 且 $f_+'(a)$ 及 $f_-'(b)$ 都存在, 那么说 $f(x)$ 在**闭区间** $[a,b]$ 上可导.
+
+### 导数的几何意义
+函数 $y=f(x)$ 在点 $x_0$ 处的导数 $f'(x_0)$ 在几何上表示曲线 $y = f(x)$ 在点 $M(x_0, f(x_0)$ 处的切线的斜率, 即:
+```math
+f'(x_0) = \tan \alpha
+```
+其中 $\alpha$ 是切线的倾角. 
+
+切线方程为:
+```math
+y - y_0 = f'(x_0)(x-x_0)
+```
+法线方程为:
+```math
+y-y_0 = -\frac{1}{f'(x_0)}(x-x_0)
+```
+
+### 函数可导性与连续性的关系
+设函数 $y=f(x)$ 在点 $x$ 处可导, 即
+```math
+\lim_{x\to 0}\frac{\Delta y}{\Delta x} = f'(x)
+```
+存在. 由具有极限的函数与无穷小的关系知道:
+```math
+\frac{\Delta y}{\Delta x} = f'(x) + \alpha
+```
+其中 $\alpha$ 为当 $\Delta x \to 0$ 似的无穷小. 上式两边同乘 $\Delta x$ 得
+```math
+\Delta y = f'(x)\Delta x + \alpha \Delta x
+```
+由此可见, 当 $\Delta x \to 0$ 时, $\Delta y \to 0$. 这就是说, 函数 $y=f(x)$ 在点 $x$ 处是连续的. 所以, 如果$y=f(x)$ 在点 $x$ 处可导, 那么函数在该点必定连续.
+
+另一方面, 一个函数在某点连续却不一定在该点可导.
+
+## 函数的求导法则
+### 函数的和/差/积/商的求导法则
+**定理 1** 如果函数 $u=u(x)$ 及 $v=v(x)$ 都在点 $x$ 具有导数, 那么他们的和/差/积/商(除分母为零的点外)都在点 $x$ 具有导数, 且:
+* $[u(x)\pm v(x)]' = u'(x)\pm v'(x)$
+* $[u(x)v(x)]' = u'(x)v(x) + u(x)v'(x)$
+* $\displaystyle\left[\frac{u(x)}{v(x)}\right]' = \frac{u'(x)v(x)-u(x)v'(x)}{v^2(x)} (v(x) \neq 0)$
+
+定理 1 的扩展:
+* $(u+v-w)' = u'+v'-w'$
+* $(uvw)' = (uv)'w + (uv)w' = (u'v + uv')w + uvw'$ 即 $(uvw)'=u'vw+uv'w+uvw'$
+
+### 反函数求导法则
+**定理 2** 如果函数 $x=f(y)$ 在区间 $I_y$ 內单调, 可导, 且 $f'(y) \neq 0$, 那么它的反函数 $y=f^{-1}(x)$ 在区间 $I_x=\{x\mid x=f(y),y\in I_y\}$ 内也可导, 且
+```math
+[f^{-1}(x)]' = \frac{1}{f'(y)}\ \ \ 或\ \ \ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{1}{\frac{\mathrm{d}x}{\mathrm{d}y}}
+```
+
+### 复合函数求导法则
+**定理 3** 如果 $u=g(x)$ 在点 $x$ 可导, 而 $y=f(u)$ 在点 $u=g(x)$ 可导, 那么复合函数 $y=f[g(x)]$ 在点 $x$ 可导, 且其导数为:
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x} = f'(u)\cdot g'(x) \ \ \ 或\ \ \ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}y}{\mathrm{d}u} \cdot \frac{\mathrm{d}u}{\mathrm{d}x}
+```
+
+### 基本求导法则与求导公式
+#### 常数和基本初等函数的导数公式
+* $(C)' = 0$
+* $(x^\mu)' = \mu x^{\mu - 1}$
+* $(\sin x)' = \cos x$
+* $(\cos x)' = -\sin x$
+* $(\tan x)' = \sec^2 x$
+* $(\cot x)' = -\csc^2 x$
+* $(\sec x)' = \sec x \tan x$
+* $(\csc x)' = -\csc x \cot x$
+* $(a^x)' = a^x\ln a\ (a\gt 0, a\neq 1)$
+* $(e^x)' = e^x$
+* $(\log_ax)' = \frac{1}{x\ln a}\ (a\gt 0,a\neq 1)$
+* $(\ln x)' = \frac{1}{x}$
+* $(\arcsin x)' = \frac{1}{\sqrt{1-x^2}}$
+* $(\arccos x)' = -\frac{1}{\sqrt{1-x^2}}$
+* $(\arctan x)' = \frac{1}{1+x^2}$
+* $(\arccot x)' = -\frac{1}{1+x^2}$
+
+#### 函数的和/差/积/商的求导法则
+设 $u=u(x), v=v(x)$ 都可导, 则
+* $(u\pm v)' = u' \pm v'$
+* $(Cu)' = Cu' (C是常数)$
+* $(uv)' = u'v + uv'$
+* $\displaystyle(\frac{u}{v}) = \frac{u'v-uv'}{v^2}\ (v\neq 0)$
+
+#### 反函数求导法则
+设函数 $x=f(y)$ 在区间 $I_y$ 內单调, 可导, 且 $f'(y) \neq 0$, 那么它的反函数 $y=f^{-1}(x)$ 在区间 $I_x=\{x\mid x=f(y),y\in I_y\}$ 内也可导, 且
+```math
+[f^{-1}(x)]' = \frac{1}{f'(y)}\ \ \ 或\ \ \ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{1}{\frac{\mathrm{d}x}{\mathrm{d}y}}
+```
+
+#### 复合函数求导法则
+设 $y=f(u)$, 而 $u=g(x)$ 且 $f(u)$ 及 $g(x)$ 都可导, 则复合函数 $y=f[g(x)]$ 的导数为:
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}y}{\mathrm{d}u} \cdot \frac{\mathrm{d}u}{\mathrm{d}x}\ \ \ 或\ \ \ \frac{\mathrm{d}y}{\mathrm{d}x} = f'(u)\cdot g'(x)
+```
