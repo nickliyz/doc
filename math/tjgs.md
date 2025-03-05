@@ -98,7 +98,7 @@ f^{-1}(y)=x
 ```
 
 #### 函数的运算
-设函数 $f(x),g(x)$ 的定义域以此为 $D_f,D_g,D=D_f\cap\neq\empty$, 则我们可以定义这两个函数的下列运算:
+设函数 $f(x),g(x)$ 的定义域以此为 $D_f,D_g,D=D_f\cap\neq\emptyset$, 则我们可以定义这两个函数的下列运算:
 * 和(差) $f\pm g:\ \ \ \ \ \ (f\pm g)(x)=f(x)\pm g(x),x \in D$
 * 积 $f\cdot g:\ \ \ \ \ \ (f\cdot g)(x)=f(x)\cdot g(x), x\in D$
 * 商 $\displaystyle\frac{f}{g}:\ \ \ \ \ \ \displaystyle\left(\frac{f}{g}\right)(x)=\frac{f(x)}{g(x)}, x\in D \backslash \{x\mid g(x)=0,x\in D\}$
