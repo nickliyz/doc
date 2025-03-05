@@ -99,7 +99,7 @@ f^{-1}(y)=x
 
 #### 函数的运算
 设函数 $f(x),g(x)$ 的定义域以此为 $D_f,D_g,D=D_f\cap\neq\empty$, 则我们可以定义这两个函数的下列运算:
-* 和(差) $f\plusmn g:\ \ \ \ \ \ (f\plusmn g)(x)=f(x)\plusmn g(x),x \in D$
+* 和(差) $f\pm g:\ \ \ \ \ \ (f\pm g)(x)=f(x)\pm g(x),x \in D$
 * 积 $f\cdot g:\ \ \ \ \ \ (f\cdot g)(x)=f(x)\cdot g(x), x\in D$
 * 商 $\displaystyle\frac{f}{g}:\ \ \ \ \ \ \displaystyle\left(\frac{f}{g}\right)(x)=\frac{f(x)}{g(x)}, x\in D \backslash \{x\mid g(x)=0,x\in D\}$
 
@@ -145,7 +145,7 @@ u^2-2xu-1=0
 ```
 这是关于 u 的一个二次方程, 它的根为:
 ```math
-u=x\plusmn\sqrt{x^2+1}
+u=x\pm\sqrt{x^2+1}
 ```
 因 $u=e^y \gt 0$, 故上式根号前应取正号, 于是:
 ```math
