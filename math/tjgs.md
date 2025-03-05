@@ -52,6 +52,7 @@
       - [函数的和/差/积/商的求导法则](#函数的和差积商的求导法则-1)
       - [反函数求导法则](#反函数求导法则-1)
       - [复合函数求导法则](#复合函数求导法则-1)
+  - [高阶导数](#高阶导数)
 
 
 # 函数与极限
@@ -630,3 +631,24 @@ y-y_0 = -\frac{1}{f'(x_0)}(x-x_0)
 ```math
 \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}y}{\mathrm{d}u} \cdot \frac{\mathrm{d}u}{\mathrm{d}x}\ \ \ 或\ \ \ \frac{\mathrm{d}y}{\mathrm{d}x} = f'(u)\cdot g'(x)
 ```
+
+## 高阶导数
+一般地, 函数 $y=f(x)$ 的导数 $y'=f'(x)$ 仍然是 $x$ 的函数. 我们把 $y'=f'(x)$ 的导数叫做函数 $y=f(x)$ 的**二阶导数**, 记作 $y''$ 或 $\displaystyle\frac{\mathrm{d}^2y}{\mathrm{d}x}$, 即:
+```math
+y'' = (y')'\ \ \ 或\ \ \ \frac{\mathrm{d}^2y}{\mathrm{d}x^2} = \frac{\mathrm{d}}{\mathrm{d}x}(\frac{\mathrm{d}y}{\mathrm{d}x})
+```
+
+相应地, 把 $y=f(x)$ 的导数 $y'=f'(x)$ 叫做函数的**一阶导数**.
+
+类似的, 二阶导数的导数, 叫做**三阶导数**, 一般地, $(n-1)$ 阶导数的导数叫做 $n$ 阶导数, 分别记作
+```math
+y''',y^{(2)},\cdots,y^{(n)}
+```
+或
+```math
+\frac{\mathrm{d}^3y}{\mathrm{d}x^3},\frac{\mathrm{d}^4y}{\mathrm{d}x^4},\cdots,\frac{\mathrm{d}^ny}{\mathrm{d}x^n}
+```
+函数 $y=f(x)$ 有 $n$ 阶导数, 也常说成函数 $y=f(x)$ 为 **$n$ 阶可导**.
+
+如果函数 $y=f(x)$ 在点 $x$ 处具有 $n$ 阶导数, 那么 $y=f(x)$ 在点 $x$ 的某一去心邻域内必定具有一切低于 $n$ 阶的导数. 二阶及二阶以上的导数统称为**高阶导数**
+
