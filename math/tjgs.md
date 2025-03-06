@@ -1247,8 +1247,8 @@ F(x) + C
 * $\displaystyle\int \frac{\mathrm{d}x}{\sqrt{1-x^2}}=\arcsin x+C$
 * $\displaystyle\int \cos x \mathrm{d}x = \sin x+C$
 * $\displaystyle\int \sin x \mathrm{d}x = -\cos x+C$
-* $\displaystyle\int \frac{\mathrm{d}x}{\cos^2x}=\int \sec^2 x \mathrm{d}x=\tan x+C$
-* $\displaystyle\int \frac{\mathrm{d}x}{\sin^2x}=\int \csc^2x\mathrm{d}x=-\cot x+C$
+* $\displaystyle\int \frac{\mathrm{d}x}{\cos^2 x}=\int \sec^2 x \mathrm{d}x=\tan x+C$
+* $\displaystyle\int \frac{\mathrm{d}x}{\sin^2 x}=\int \csc^2 x\mathrm{d}x=-\cot x+C$
 * $\displaystyle\int \sec x \tan x \mathrm{d}x=\sec x + C$
 * $\displaystyle\int \csc x \cot x \mathrm{d}x=-\csc x + C$
 * $\displaystyle\int e^x\mathrm{d}x=e^x+C$
