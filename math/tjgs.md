@@ -53,6 +53,30 @@
       - [反函数求导法则](#反函数求导法则-1)
       - [复合函数求导法则](#复合函数求导法则-1)
   - [高阶导数](#高阶导数)
+  - [隐函数及有参数方程所确定的函数的导数  相关变化率](#隐函数及有参数方程所确定的函数的导数--相关变化率)
+    - [隐函数的导数](#隐函数的导数)
+    - [由参数方程所确定的函数的导数](#由参数方程所确定的函数的导数)
+    - [相关变化率](#相关变化率)
+  - [函数的微分](#函数的微分)
+    - [微分的定义](#微分的定义)
+    - [微分的几何意义](#微分的几何意义)
+    - [基本初等函数的微分公式与微分运算法则](#基本初等函数的微分公式与微分运算法则)
+      - [基本初等函数的微分公式](#基本初等函数的微分公式)
+      - [函数和/差/积商的微分法则](#函数和差积商的微分法则)
+      - [复合函数的微分法则](#复合函数的微分法则)
+    - [微分在近似计算中的应用](#微分在近似计算中的应用)
+      - [函数的近似计算](#函数的近似计算)
+      - [误差估计](#误差估计)
+- [微分中值定理与导数的应用](#微分中值定理与导数的应用)
+  - [微分中值定理](#微分中值定理)
+    - [罗尔定理](#罗尔定理)
+    - [拉格朗日中值定理](#拉格朗日中值定理)
+    - [柯西中值定理](#柯西中值定理)
+  - [洛必达法则](#洛必达法则)
+  - [泰勒公式](#泰勒公式)
+  - [函数的的单调性与曲线的凹凸性](#函数的的单调性与曲线的凹凸性)
+    - [函数单调性的判定法](#函数单调性的判定法)
+    - [曲线的凹凸与拐点.](#曲线的凹凸与拐点)
 
 
 # 函数与极限
@@ -611,7 +635,7 @@ y-y_0 = -\frac{1}{f'(x_0)}(x-x_0)
 * $(\arcsin x)' = \frac{1}{\sqrt{1-x^2}}$
 * $(\arccos x)' = -\frac{1}{\sqrt{1-x^2}}$
 * $(\arctan x)' = \frac{1}{1+x^2}$
-* $(\mathrm{arccot}\ x)' = -\frac{1}{1+x^2}$
+* $(\mathrm{arccot}x)' = -\frac{1}{1+x^2}$
 
 #### 函数的和/差/积/商的求导法则
 设 $u=u(x), v=v(x)$ 都可导, 则
@@ -650,5 +674,254 @@ y''',y^{(2)},\cdots,y^{(n)}
 ```
 函数 $y=f(x)$ 有 $n$ 阶导数, 也常说成函数 $y=f(x)$ 为 **$n$ 阶可导**.
 
-如果函数 $y=f(x)$ 在点 $x$ 处具有 $n$ 阶导数, 那么 $y=f(x)$ 在点 $x$ 的某一去心邻域内必定具有一切低于 $n$ 阶的导数. 二阶及二阶以上的导数统称为**高阶导数**
+函数 $y=f(x)$ 在点 $x$ 处具有 $n$ 阶导数, 那么 $y=f(x)$ 在点 $x$ 的某一去心邻域内必定具有一切低于 $n$ 阶的导数. 二阶及二阶以上的导数统称为**高阶导数**
 
+## 隐函数及有参数方程所确定的函数的导数  相关变化率
+### 隐函数的导数
+把一个隐函数化成显函数, 叫做隐函数的显化.
+**例 1** 求由方程 $e^y+xy-e=0$ 所确定的隐函数的导数 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}$
+
+**解** 我们把方程两边分别对 $x$ 求导数, 注意 $y=y(x)$. 方程两边对 $x$ 求导得:
+```math
+\frac{\mathrm{d}}{\mathrm{d}x}(e^y+xy-e)=e^y\frac{\mathrm{d}y}{\mathrm{d}x}+y+x\frac{\mathrm{d}y}{\mathrm{d}x}
+```
+方程右边对 $x$ 求导得:
+```math
+(0)'=0
+```
+由于等式两边对 $x$ 的导数相等, 所以:
+```math
+e^y\frac{\mathrm{d}y}{\mathrm{d}x}+y+x\frac{\mathrm{d}y}{\mathrm{d}x} = 0
+```
+从而
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x}=-\frac{y}{x+e^y}\ \ \ (x+e^y\neq 0)
+```
+
+### 由参数方程所确定的函数的导数
+一般地, 若参数方程
+```math
+\begin{cases}
+x=\varphi(t) \\
+y=\psi(t)
+\end{cases}
+```
+确定 $y$ 与 $x$ 间的函数关系, 则称此函数关系所表达的函数为由上述参数方程所确定的函数.
+
+根据复合函数的求导法则与反函数的求导法则有:
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{\mathrm{d}y}{\mathrm{d}t}\cdot\frac{\mathrm{d}t}{\mathrm{d}x}=\frac{\mathrm{d}y}{\mathrm{d}t}\cdot\frac{1}{\frac{\mathrm{d}x}{\mathrm{d}t}}=\frac{\varphi'(t)}{\psi'(t)}
+```
+即
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{\varphi'(t)}{\psi'(t)}
+```
+上式也可以写成:
+```math
+\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{\frac{\mathrm{d}y}{\mathrm{d}t}}{\frac{\mathrm{d}x}{\mathrm{d}t}}
+```
+如果 $x=\varphi(t), y=\psi(t)$ 还是二阶可导的, 那么又可得到函数的二阶求导公式:
+```math
+\begin{align}
+\frac{\mathrm{d}^2y}{\mathrm{d}x^2}&=\frac{\mathrm{d}}{\mathrm{d}x}\left(\frac{\mathrm{d}y}{\mathrm{d}x}\right)=\frac{\mathrm{d}}{\mathrm{d}x}\left(\frac{\varphi'(t)}{\psi'(t)}\right)\cdot\frac{\mathrm{d}t}{\mathrm{d}x} \\
+&=\frac{\varphi''(t)\psi'(t)-\varphi'(t)\psi''(t)}{\psi'^2(t)}\cdot\frac{1}{\psi'(t)}
+\end{align}
+```
+即
+```math
+\frac{\mathrm{d}^2y}{\mathrm{d}x^2}=\frac{\varphi''(t)\psi'(t)-\varphi'(t)\psi''(t)}{\psi'^3(t)}
+```
+
+### 相关变化率
+设 $x=x(t)$ 及 $y=y(t)$ 都是可导函数, 而变量 $x$ 与 $y$ 间存在某种关系, 从而变化率 $\displaystyle\frac{\mathrm{d}x}{\mathrm{d}t}$ 与 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}t}$ 间也存在一定关系. 这两个相互以来的变化率称为**相关变化率**. 
+
+## 函数的微分
+### 微分的定义
+**定义** 设函数 $y=f(x)$ 在某区间内有定义, $x_0$ 及 $x_0+\Delta x$ 在这区间内, 如果函数的增量
+```math
+\Delta y = f(x_0 + \Delta x) - f(x_0)
+```
+可表示为:
+```math
+\Delta y = A\Delta x + o(\Delta x)
+```
+其中 $A$ 是不依赖于 $\Delta x$ 的常数, 那么城函数 $y=f(x)$ 在点 $x_0$ 是**可微**的. 而 $A\Delta x$ 叫做函数 $y=f(x)$ 在点 $x_0$ 相应于自变量 $\Delta x$ 的**微分**, 记作 $\mathrm{d}y$, 即
+```math
+\mathrm{d}y=A\Delta x
+```
+
+### 微分的几何意义
+在直角坐标系中, 函数 $y=f(x)$ 的图形是一条曲线. 对于某一固定的 $x_0$ 值, 曲线上有一个确定点 $M(x_0,y_0)$, 当自变量 $x$ 有微小增量 $\Delta x$ 时, 就得到曲线上另一个点 $N(x_0+\Delta x, y_0+\Delta y)$, 可知:
+```math
+MQ=\Delta x
+QN=\Delta y
+```
+过点 $M$ 做曲线的切线 $MT$ , 它的倾角为 $\alpha$, 则
+```math
+QP=MQ\cdot\tan\alpha=\Delta x\cdot f'(x_0)
+```
+即
+```math
+\mathrm{d}y=QP
+```
+
+### 基本初等函数的微分公式与微分运算法则
+函数的微分公式:
+```math
+\mathrm{d}y=f'(x)\mathrm{d}x
+```
+
+#### 基本初等函数的微分公式
+|导数公式|微分公式|
+|-|-|
+|$(x^\mu)'=\mu x^{\mu-1}$|$\mathrm{d}(x^u)=\mu x^{\mu-1}\mathrm{d}x$|
+|$(\sin x)' = \cos x$|$\mathrm{d}(\sin x)=\cos x\mathrm{d}x$|
+|$(\cos x)' = -\sin x$|$\mathrm{d}(\cos x)=-\sin x\mathrm{d}x$|
+|$(\tan x)' = \sec^2 x$|$\mathrm{d}()=\sec^2x\mathrm{d}x$|
+|$(\cot x)' = -\csc^2 x$|$\mathrm{d}()=-\csc^2\mathrm{d}x$|
+|$(\sec x)' = \sec x \tan x$|$\mathrm{d}(\sec x)=\sec x\tan x\mathrm{d}x$|
+|$(\csc x)' = -\csc x \cot x$|$\mathrm{d}(\csc x)=-\csc x\cot x\mathrm{d}x$|
+|$(a^x)' = a^x\ln a\ (a\gt 0, a\neq 1)$|$\mathrm{d}(a^x)=a^x\ln a\mathrm{d}x\ \ (a\gt 0 且 a \neq 1)$|
+|$(e^x)' = e^x$|$\mathrm{d}(e^x)=e^x\mathrm{d}x$|
+|$(\log_ax)' = \frac{1}{x\ln a}\ (a\gt 0,a\neq 1)$|$\mathrm{d}(\log_a x)=\frac{1}{x\ln a}\mathrm{d}x\ \ (a\gt 0 且 a \neq 1)$|
+|$(\ln x)' = \frac{1}{x}$|$\mathrm{d}(\ln x)=\frac{1}{x}\mathrm{d}x$|
+|$(\arcsin x)' = \frac{1}{\sqrt{1-x^2}}$|$\mathrm{d}(\arcsin x)=\frac{1}{\sqrt{1-x^2}}\mathrm{d}x$|
+|$(\arccos x)' = -\frac{1}{\sqrt{1-x^2}}$|$\mathrm{d}(\arccos x)=-\frac{1}{\sqrt{1-x^2}}\mathrm{d}x$|
+|$(\arctan x)' = \frac{1}{1+x^2}$|$\mathrm{d}(\arctan x)=\frac{1}{1+x^2}\mathrm{d}x$|
+|$(\mathrm{arccot}x)' = -\frac{1}{1+x^2}$|$\mathrm{d}(\mathrm{arccot}x)=-\frac{1}{1+x^2}\mathrm{d}x$|
+
+#### 函数和/差/积商的微分法则
+|函数和/差/积商的求导法则|函数和/差/积商的微分法则|
+|-|-|
+|$(u\pm v)' = u' \pm v'$|$\mathrm{d}(u\pm v)=\mathrm{d}u\pm \mathrm{d}v$|
+|$(Cu)' = Cu' (C是常数)$|$\mathrm{d}(Cu)=C\mathrm{d}u$|
+|$(uv)' = u'v + uv'$|$\mathrm{d}(uv)=v\mathrm{d}u+u\mathrm{d}v$|
+|$\displaystyle(\frac{u}{v}) = \frac{u'v-uv'}{v^2}\ (v\neq 0)$|$\mathrm{d}\left(\frac{u}{v}\right)=\frac{v\mathrm{d}u-u\mathrm{d}v}{v^2}\ \ (v\neq 0)$|
+
+#### 复合函数的微分法则
+设 $y=f(u)$ 及 $u=g(x)$ 都可导, 则复合函数 $x=f[g(x)]$ 的微分为:
+```math
+dy=y', dx=f'(u)g'(x)\mathrm{d}x
+```
+由于 $g'(x)\mathrm{d}x=\mathrm{d}u$, 所以, 复合函数 $x=f[g(x)]$ 的微分公式可写成
+```math
+\mathrm{d}y=f'(u)\mathrm{d}u\ \ \ 或\ \ \ \mathrm{d}y=y'_u\mathrm{d}u
+```
+由此可见, 无论 $u$ 是自变量还是中间变量, 微分形式 $\mathrm{d}y=f'(u)\mathrm{d}u$ 保持不变. 这一性质称为**微分形式不变性**. 这性质表示, 当变换自变量时, 微分形式 $\mathrm{d}y=f'(u)\mathrm{d}u$ 并不改变.
+
+### 微分在近似计算中的应用
+#### 函数的近似计算
+如果 $y=f(x)$ 在点 $x_0$ 处的导数 $f'(x_0)\neq0$, 且 $|\Delta x|$ 很小时, 我们有
+```math
+\Delta y \approx \mathrm{d}x=f'(x_0)\Delta x
+```
+这个式子也可以写为
+```math
+\Delta y=f(x_0+\Delta x)-f(x_0)\approx f'(x_0)\Delta x
+```
+或
+```math
+f(x_0+\Delta x)\approx f(x_0)+f'(x_0)(x-x_0)
+```
+如果 $f(x_0)$ 与 $f'(x_0)$ 都容易计算, 那么可以近似计算 $\Delta y$
+
+#### 误差估计
+根据带有误差的数据计算所得的结果也会有误差, 我们把它叫做**间接测量误差**
+
+如果某个量的精确值为 $A$, 它的近似值为 $a$, 那么 $|A-a|$ 叫做 $a$ 的绝对差, 而绝对误差. 而绝对误差与 $|a|$ 的比值 $\displaystyle\frac{|A-a|}{a}$ 叫做 $a$ 的相对误差.
+
+如果
+```math
+|A-a|\le \delta_A
+```
+那么 $\delta_A$ 叫做测量 $A$ 的**绝对误差限**, 而 $\displaystyle\frac{\delta_A}{|a|}$ 叫做测量 $A$ 的**相对误差限**.
+
+# 微分中值定理与导数的应用
+## 微分中值定理
+### 罗尔定理
+**费马引理** 设函数 $f(x)$ 在点 $x_0$ 的某邻域 $U(x_0)$ 内有定义, 并且在 $x_0$ 处可导, 如果对于任意的 $x\in U(x_0)$, 有
+```math
+f(x)\le f(x_0)\ \ \ (或 f(x) \ge f(x_0))
+```
+那么 $f'(x_0)=0$
+
+**罗尔定理** 如果函数 $f(x)$ 满足
+* 在闭区间 $[a,b]$ 上连续
+* 在开区间 $(a,b)$ 内可导
+* 在区间端点处的函数值相等, 即 $f(a) = f(b)$
+
+那么在 $(a,b)$ 内至少有一点 $\xi (a\lt\xi\lt b)$, 使得 $f'(\xi)=0$
+
+### 拉格朗日中值定理
+**拉格朗日中值定理** 如果函数 $f(x)$ 满足
+* 在闭区间 $[a,b]$ 上连续
+* 在开区间 $(a,b)$ 内可导
+
+那么在 $(a,b)$ 内至少有一点 $\xi (a\lt\xi\lt b)$, 使等式
+```math
+f(b)-f(a)=f'(\xi)(b-a)
+```
+成立.
+
+**定理** 如果函数 $f(x)$ 在区间 $I$ 上连续, $I$ 内可导, 且导数为零, 那么 $f(x)$ 在区间 $I$ 上是一个常数.
+
+### 柯西中值定理
+**柯西中值定理** 如果函数 $f(x)$ 及 $F(x)$ 满足
+* 在闭区间 $[a,b]$ 上连续
+* 在开区间 $(a,b)$ 内可导
+* 对于任一 $x\in(a,b), F'(x)\neq 0$
+那么在 $(a,b)$ 内至少有一点 $\xi$, 使等式
+```math
+\frac{f(b)-f(a)}{F(b)-F(a)}=\frac{f'(\xi)}{F'(\xi)}
+```
+成立.
+
+## 洛必达法则
+**定理 1** 设
+* 当 $x\to a$ 时, 函数 $f(x)$ 及 $F(x)$ 都趋于零
+* 在点 $a$ 的某去心邻域内, $f'(x)$ 及 $F'(x)$ 都存在且 $F'(x)\neq 0$
+* $\displaystyle\lim_{x\to a}\frac{f'(x)}{F'(x)}$ 存在 (或为无穷大)
+
+则
+```math
+\lim_{x\to a}\frac{f(x)}{F(x)}=\lim_{x\to a}\frac{f'(x)}{F'(x)}
+```
+这种在一定条件下通过分子分母分别求导再求极限来确定未定式的值的方法称为**洛必达(L'Hospital)法则**
+
+**定理 2** 设
+* 当 $x\to\infty$ 时函数 $f(x)$ 及 $F(x)$ 都趋于零
+* 当 $|x|\gt N$ 时, $f'(x)$ 与 $F'(x)$ 都存在, 且 $F'(x)\neq 0$
+* $\displaystyle\lim_{x\to\infty}\frac{f'(x)}{F'(x)}$ 存在(或为无穷大)
+
+则
+```math
+\lim_{x\to\infty}\frac{f(x)}{F(x)}=\lim_{x\to\infty}\frac{f'(x)}{F'(x)}
+```
+
+## 泰勒公式
+**泰勒(Taylor)中值定理 1** 如果函数 $f(x)$ 在 $x_0$ 处具有 $n$ 阶导数, 那么存在 $x_0$ 的一个邻域, 对于该邻域内的任一 $x$ 有
+```math
+f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\cdots+\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n + R_n(x)
+```
+其中
+```math
+R_n(x)=o((x-x_0)^n)
+```
+
+**泰勒(Taylor)中值定理 2** 如果函数 $f(x)$ 在 $x_0$ 的某个去心邻域 $U(x_0)$ 内具有 $(n_1)$ 阶导数, 那么对于任一 $x\in U(x_0)$, 有
+```math
+f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\cdots+\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n + R_n(x)
+```
+其中
+```math
+R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)^{n+1}
+```
+这里 $\xi$ 是 $x_0$ 与 $x$ 之间的某个值.
+
+## 函数的的单调性与曲线的凹凸性
+### 函数单调性的判定法
+**定理 1** 设函数 $y=f(x)$ 在 $[a,b]$ 上连续, 在 $(a,b)$ 内可导.
+* 如果在 $(a,b)$ 内 $f'(x)\ge 0$, 且等号仅在有限多个点处成立, 那么函数 $y=f(x)$ 在 $[a,b]$ 上单调增加.
+* 如果在 $(a,b)$ 内 $f'(x)\le 0$, 且等号仅在有限多个点处成立, 那么函数 $y=f(x)$ 在 $[a,b]$ 上单调减少.
+
+### 曲线的凹凸与拐点.
