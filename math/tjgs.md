@@ -1305,7 +1305,7 @@ F'(u)=f(u),\ \int f(u)\mathrm{d}u=F(u)+C
 * $\displaystyle\int \sec x \mathrm{d}x=\ln|\sec x + \tan x|+C$
 * $\displaystyle\int \csc x \mathrm{d}x=\ln|\csc x-\cot x|+C$
 * $\displaystyle\int \frac{\mathrm{d}x}{a^2+x^2}=\frac{1}{a}\arctan \frac{x}{a}+C$
-* $\displaystyle\int \frac{\mathrm{d}x}{x^2+a^2}=\frac{1}{a}\ln\left|\frac{x-a}{x+a}\right|+C$$
+* $\displaystyle\int \frac{\mathrm{d}x}{x^2+a^2}=\frac{1}{a}\ln\left|\frac{x-a}{x+a}\right|+C$
 * $\displaystyle\int \frac{\mathrm{d}x}{\sqrt{a^2-x^2}}=\arcsin\frac{x}{a}=C$
 * $\displaystyle\int \frac{\mathrm{d}x}{\sqrt{x^2+a^2}}=\ln(x+\sqrt{x^2+a^2})+C$
 * $\displaystyle\int \frac{\mathrm{d}x}{\sqrt{x^2-a^2}}=\ln|x+\sqrt{x^2-a^2}|+C$
