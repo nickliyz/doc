@@ -1134,7 +1134,7 @@ x-\alpha=-y'(y-\beta)=\frac{y'(1+y'^2)}{y''}
 
 如果 $f(\xi_1)=0$, 那么 $\xi=\xi_1$
 
-如果 $f(\xi_1)$ 与 $f(a)$ 同号, 那么取 $a_1=\xi_1, b_1=b$, 由 $f(a_1)\codt f(b_1)\lt 0$, 即知 $a_1 \lt \xi_1 \lt b_1$, 且 $\displaystyle b_1=a_1=\frac{1}{2}(b-a)$
+如果 $f(\xi_1)$ 与 $f(a)$ 同号, 那么取 $a_1=\xi_1, b_1=b$, 由 $f(a_1)\cdot f(b_1)\lt 0$, 即知 $a_1 \lt \xi_1 \lt b_1$, 且 $\displaystyle b_1=a_1=\frac{1}{2}(b-a)$
 
 如果 $f(\xi_1)$ 与 $f(b)$ 同号, 那么取 $a_1=a, b_1=\xi_1$, 也有 $a_1 \lt \xi_1 \lt b_1$, 及 $\displaystyle b_1=a_1=\frac{1}{2}(b-a)$
 
